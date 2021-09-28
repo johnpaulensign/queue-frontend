@@ -51,7 +51,7 @@
 
     <div v-else>
       <h4>You submitted successfully!</h4>
-      <button class="btn btn-success" @click="newCustomer">Sign up for queue</button>
+      <!-- <button class="btn btn-success" @click="newCustomer">Sign up for queue</button> -->
     </div>
   </div>
 </template>
@@ -87,6 +87,9 @@ export default {
           this.customer.id = response.data.id;
           console.log(response.data);
           this.submitted = true;
+          setTimeout(()=> {
+            window.location.replace("/dashboard")
+          }, 1000);
         })
         .catch(e => {
           console.log(e);
