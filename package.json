@@ -7,7 +7,7 @@
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint",
     "clean": "gcloud compute ssh ensign_johnpaul@queue --command=\"rm -rf ./queue-frontend/dist/\"",
-    "deploy": "cloud compute scp --recurse dist/ ensign_johnpaul@queue:~/queue-frontend/",
+    "deploy": "gcloud compute scp --recurse dist/ ensign_johnpaul@queue:~/queue-frontend/",
     "cloud": "npm run build && npm run clean && npm run deploy"
   },
   "dependencies": {

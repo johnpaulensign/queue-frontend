@@ -8,50 +8,60 @@
           class="form-control"
           id="name"
           required
-          v-model="customer.name"
+          v-model="name"
           name="name"
         />
       </div>
 
       <div class="form-group">
         <label for="phone">Phone</label>
-        <input
-          class="form-control"
-          id="phone"
-          required
-          v-model="customer.phone"
-          name="phone"
-        />
+        <input class="form-control" id="phone" required v-model="phone" name="phone" />
       </div>
 
       <div class="form-group">
         <label for="email">Email</label>
-        <input
-          class="form-control"
-          id="email"
-          required
-          v-model="customer.email"
-          name="email"
-        />
+        <input class="form-control" id="email" required v-model="email" name="email" />
       </div>
 
       <div class="form-group">
-        <label for="ticketNumber">Ticket Number</label>
-        <input
+        <!-- <input
           class="form-control"
           id="ticketNumber"
           required
-          v-model="customer.ticketNumber"
+          v-model="ticketNumber"
           name="ticketNumber"
-        />
-      </div>
+        /> -->
+        <div v-if="!timeBased">
+          <label for="ticketNumber">Ticket Number</label>
+          <input
+            type="text"
+            name="ticketNumber"
+            id="ticketNumber"
+            v-model="ticketNumber"
+          />
+        </div>
 
-      <button @click="saveCustomer" class="btn btn-success">Submit</button>
+        <div v-else>
+          <label>Ticket Time</label>
+          <select v-model="ticketHour">
+            <option :key="hour" v-for="hour in this.hours" :value="hour">
+              {{ hour }}
+            </option>
+          </select>
+          <select v-model="ticketMinute">
+            <option :key="minute" v-for="minute in this.minutes" :value="minute">
+              {{ minute }}
+            </option>
+          </select>
+          PM
+        </div>
+
+        <button @click="saveCustomer" class="btn btn-success">Submit</button>
+      </div>
     </div>
 
     <div v-else>
       <h4>You submitted successfully!</h4>
-      <!-- <button class="btn btn-success" @click="newCustomer">Sign up for queue</button> -->
     </div>
   </div>
 </template>
@@ -63,35 +73,44 @@ export default {
   name: "add-customer",
   data() {
     return {
-      customer: {
-        id: null,
-        name: "",
-        phone: "",
-        email: "",
-        ticketNumber: ""
-      },
-      submitted: false
+      // customer: {
+      id: null,
+      name: "",
+      phone: "",
+      email: "",
+      ticketNumber: "",
+      // },
+      minutes: [],
+      hours: [],
+      ticketHour: "1",
+      ticketMinute: "00",
+      timeBased: true,
+      submitted: false,
     };
   },
   methods: {
     saveCustomer() {
+      let ticketNumber = this.ticketNumber;
+      if (this.timeBased) {
+        ticketNumber = this.ticketHour + ":" + this.ticketMinute;
+      }
       var data = {
-        name: this.customer.name,
-        phone: this.customer.phone,
-        email: this.customer.email,
-        ticketNumber: this.customer.ticketNumber
+        name: this.name,
+        phone: this.phone,
+        email: this.email,
+        ticketNumber,
       };
 
       CustomerDataService.create(data)
-        .then(response => {
-          this.customer.id = response.data.id;
+        .then((response) => {
+          this.id = response.data.id;
           console.log(response.data);
           this.submitted = true;
-          setTimeout(()=> {
-            window.location.replace("/dashboard")
+          setTimeout(() => {
+            window.location.replace("/dashboard");
           }, 1000);
         })
-        .catch(e => {
+        .catch((e) => {
           console.log(e);
         });
     },
@@ -99,8 +118,31 @@ export default {
     newCustomer() {
       this.submitted = false;
       this.customer = {};
-    }
-  }
+    },
+    generateTimes() {
+      let hours = [],
+        minutes = [];
+      for (let i = 0; i < 12; i++) {
+        let hour = i + 1;
+        let minute = i * 5;
+
+        if (minute < 10) {
+          minute = `0${minute}`;
+        } else {
+          minute = `${minute}`;
+        }
+        if (hour < 12) {
+          hours.push(hour);
+        }
+        minutes.push(minute);
+      }
+      this.hours = hours;
+      this.minutes = minutes;
+    },
+  },
+  mounted() {
+    this.generateTimes();
+  },
 };
 </script>
 
