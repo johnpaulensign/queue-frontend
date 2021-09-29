@@ -2,13 +2,13 @@
   <div id="dashboard">
     <ul>
       <li>
-        <p>If your ticket is between</p>
+        <p>{{ topText }}</p>
       </li>
       <li>
-        <p>{{ticketStart}} - {{ticketEnd}}</p>
+        <p>{{ ticketStart }} - {{ ticketEnd }}</p>
       </li>
       <li>
-        <p>you may now enter</p>
+        <p>{{ bottomText }}</p>
       </li>
     </ul>
   </div>
@@ -22,28 +22,31 @@ export default {
   data() {
     return {
       ticketStart: 0,
-      ticketEnd: 0
+      ticketEnd: 0,
+      topText: "Loading...",
+      bottomText: "Loading...",
     };
   },
   methods: {
     getDashboard() {
-      DashboardDataService.get(window.location.host)
-        .then((response) => {
-          console.log(response)
-          const dashboard = response.data[0];
-          this.ticketStart = dashboard.ticketStart;
-          this.ticketEnd = dashboard.ticketEnd;
-        })
-    }
+      DashboardDataService.get(window.location.host).then((response) => {
+        console.log(response);
+        const dashboard = response.data[0];
+        this.ticketStart = dashboard.ticketStart;
+        this.ticketEnd = dashboard.ticketEnd;
+        this.topText = dashboard.topText;
+        this.bottomText = dashboard.bottomText;
+      });
+    },
   },
   mounted() {
-    console.log()
-    document.querySelector('nav').hidden = true;
+    console.log();
+    document.querySelector("nav").hidden = true;
     this.getDashboard();
     setInterval(this.getDashboard, 10000);
   },
   unmounted() {
-    document.querySelector('nav').hidden = false;
+    document.querySelector("nav").hidden = false;
   },
 };
 </script>
