@@ -12,28 +12,47 @@
           <button class="btn btn-outline-secondary" type="button" @click="search">
             Search
           </button>
+          <button
+            v-if="interval == null"
+            class="btn btn-outline-secondary"
+            type="button"
+            @click="startRefresh"
+          >
+            Clear
+          </button>
         </div>
       </div>
     </div>
     <div class="col-md-6">
-      <!-- <h4>Customer List</h4> -->
+      <h4>Waiting</h4>
       <ul class="list-group">
         <li
           class="list-group-item"
-          :class="{ active: index == currentIndex }"
-          v-for="(customer, index) in customers"
+          :class="{ active: index == currentWaitingIndex }"
+          v-for="(customer, index) in waitingCustomers"
           :key="index"
           @click="setActiveCustomer(customer, index)"
         >
-          {{ customer.name }} - {{ customer.ticketNumber }}
+          {{ customer.name ? customer.name + " - " : "" }} {{ customer.ticketNumber }}
           <span style="float: right" v-if="customer.notificationDate != null">√</span>
           <span style="float: right" v-else>X</span>
         </li>
       </ul>
 
-      <!-- <button class="m-3 btn btn-sm btn-danger" @click="removeAllCustomers" v-bind:disabled="customers.length == 0">
-        Remove All
-      </button> -->
+      <h4 class="mt-3">Notified</h4>
+      <ul class="list-group">
+        <li
+          class="list-group-item"
+          :class="{ active: index == currentNotifiedIndex }"
+          v-for="(customer, index) in notifiedCustomers"
+          :key="index"
+          @click="setActiveCustomer(customer, index)"
+        >
+          {{ customer.name ? customer.name + " - " : "" }} {{ customer.ticketNumber }}
+          <span style="float: right" v-if="customer.notificationDate != null">√</span>
+          <span style="float: right" v-else>X</span>
+        </li>
+      </ul>
     </div>
     <div class="col-md-6">
       <div v-if="currentCustomer">
@@ -96,9 +115,13 @@ export default {
   data() {
     return {
       customers: [],
+      waitingCustomers: [],
+      notifiedCustomers: [],
       currentCustomer: null,
-      currentIndex: -1,
+      currentNotifiedIndex: -1,
+      currentWaitingIndex: -1,
       query: "",
+      interval: null,
     };
   },
   methods: {
@@ -106,6 +129,7 @@ export default {
       CustomerDataService.getAll()
         .then((response) => {
           this.customers = response.data;
+          this.setCustomers();
           console.log(response.data);
         })
         .catch((e) => {
@@ -116,14 +140,31 @@ export default {
     refreshList() {
       this.retrieveCustomers();
       this.currentCustomer = null;
-      this.currentIndex = -1;
+      this.currentNotifiedIndex = -1;
+      this.currentWaitingIndex = -1;
     },
 
     setActiveCustomer(customer, index) {
       this.currentCustomer = customer;
-      this.currentIndex = customer ? index : -1;
+      this.currentNotifiedIndex = -1;
+      this.currentWaitingIndex = -1;
+      if (customer && customer.notificationDate == null) {
+        this.currentWaitingIndex = customer ? index : -1;
+      } else {
+        this.currentNotifiedIndex = customer ? index : -1;
+      }
     },
-
+    setCustomers() {
+      this.waitingCustomers = [];
+      this.notifiedCustomers = [];
+      for (let customer of this.customers) {
+        if (customer && customer.notificationDate == null) {
+          this.waitingCustomers.push(customer);
+        } else {
+          this.notifiedCustomers.push(customer);
+        }
+      }
+    },
     removeAllCustomers() {
       CustomerDataService.deleteAll()
         .then((response) => {
@@ -134,21 +175,34 @@ export default {
           console.log(e);
         });
     },
-
     search() {
       CustomerDataService.findByAny(this.query)
         .then((response) => {
           this.customers = response.data;
+          this.setCustomers();
           this.setActiveCustomer(null);
           console.log(response.data);
+          this.stopRefresh();
         })
         .catch((e) => {
           console.log(e);
         });
     },
+    startRefresh() {
+      this.retrieveCustomers();
+      if (this.interval == null) {
+        this.interval = setInterval(() => {
+          this.retrieveCustomers();
+        }, 30000);
+      }
+    },
+    stopRefresh() {
+      window.clearInterval(this.interval);
+      this.interval = null;
+    },
   },
   mounted() {
-    this.retrieveCustomers();
+    this.startRefresh();
   },
 };
 </script>

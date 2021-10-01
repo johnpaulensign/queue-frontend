@@ -5,10 +5,10 @@
       <div class="container">
         <div class="row">
           <div class="col-4">
-            <control></control>
+            <control @refreshCustomers="refreshCustomers"></control>
           </div>
           <div class="col-8">
-            <customers-list></customers-list>
+            <customers-list ref="customerList"></customers-list>
           </div>
         </div>
       </div>
@@ -48,6 +48,9 @@ export default {
         .catch((response) => {
           console.log("Error:", response);
         });
+    },
+    refreshCustomers() {
+      this.$refs.customerList.retrieveCustomers();
     },
   },
   mounted() {

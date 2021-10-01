@@ -18,7 +18,7 @@
       </div>
       <input
         v-else
-        type="text"
+        type="number"
         name="ticketStart"
         id="ticketStart"
         v-model="ticketStart"
@@ -37,7 +37,7 @@
         </select>
         PM
       </div>
-      <input v-else type="text" name="ticketEnd" id="ticketEnd" v-model="ticketEnd" />
+      <input v-else type="number" name="ticketEnd" id="ticketEnd" v-model="ticketEnd" />
       <input type="submit" value="Update Dashboard / Send Texts" />
     </form>
     <form class="row" @submit.prevent="updateConfiguration">
@@ -110,6 +110,7 @@ export default {
         bottomText: this.bottomText,
         timeBased: this.timeBased,
       });
+      this.$emit("refreshCustomers");
     },
     updateDashboard() {
       let start = this.ticketStart;
@@ -123,6 +124,8 @@ export default {
         ticketStart: start,
         ticketEnd: end,
         timeBased: this.timeBased,
+      }).then(() => {
+        this.$emit("refreshCustomers");
       });
     },
     getTimes() {
