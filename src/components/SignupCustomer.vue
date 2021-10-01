@@ -68,6 +68,7 @@
 
 <script>
 import CustomerDataService from "../services/CustomerDataService";
+import DashboardDataService from "../services/DashboardDataService";
 
 export default {
   name: "add-customer",
@@ -84,7 +85,7 @@ export default {
       hours: [],
       ticketHour: "1",
       ticketMinute: "00",
-      timeBased: true,
+      timeBased: null,
       submitted: false,
     };
   },
@@ -114,7 +115,6 @@ export default {
           console.log(e);
         });
     },
-
     newCustomer() {
       this.submitted = false;
       this.customer = {};
@@ -142,6 +142,10 @@ export default {
   },
   mounted() {
     this.generateTimes();
+    DashboardDataService.get(window.location.host).then((response) => {
+      const dashboard = response.data[0];
+      this.timeBased = dashboard.timeBased;
+    });
   },
 };
 </script>
