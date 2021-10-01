@@ -8,7 +8,7 @@
         </div>
 
         <div class="row form-group">
-          <label for="phone">Phone</label>
+          <label for="phone">Phone </label>
           <input
             class="form-control"
             id="phone"
@@ -16,6 +16,7 @@
             v-model="phone"
             name="phone"
           />
+          <span style="color: red"> {{ phoneLabelError }} </span>
         </div>
 
         <div class="row form-group">
@@ -105,10 +106,16 @@ export default {
       ticketMinute: "00",
       timeBased: null,
       submitted: false,
+      phoneLabelError: "",
     };
   },
   methods: {
     saveCustomer() {
+      if (!this.phone || this.phone.length != 9) {
+        this.phoneLabelError = "9 digits required, e.g. 4145551234";
+        return;
+      }
+      this.phoneLabelError = "";
       let ticketNumber = this.ticketNumber;
       if (this.timeBased) {
         ticketNumber = this.ticketHour + ":" + this.ticketMinute;
