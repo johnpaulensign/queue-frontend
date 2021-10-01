@@ -49,7 +49,9 @@
       <input type="submit" />
     </form>
     <br />
-    <h4>Configuration</h4>
+    <br />
+    <br />
+    <h4>Dashboard Text</h4>
     <form @submit.prevent="updateConfiguration">
       <label for="topText">Top Text</label>
       <input type="text" name="topText" id="topText" v-model="topText" />
@@ -60,6 +62,17 @@
       <input type="submit" />
     </form>
     <br />
+    <br />
+    <br />
+    <h4>Upload Background Image</h4>
+    <input type="file" placeholder="Upload background image" id="backgroundFile" /> <br />
+    <input type="submit" @click="uploadBackground" />
+    <br />
+    <br />
+    <br />
+    <h4>Danger Zone</h4>
+    <!-- TODO: Show number of customers -->
+    <!-- TODO: Confirmation -->
     <button v-if="!timeBased" @click="switchToTimeBased">
       Switch to time based (deletes all customers)
     </button>
@@ -72,6 +85,7 @@
 <script>
 import CustomerDataService from "../services/CustomerDataService";
 import DashboardDataService from "../services/DashboardDataService";
+import FileService from "../services/FileService";
 
 export default {
   name: "control",
@@ -88,6 +102,7 @@ export default {
       ticketEndMinute: null,
       minutes: [],
       hours: [],
+      backgroundFile: null,
     };
   },
   methods: {
@@ -163,6 +178,54 @@ export default {
           window.location.reload();
         });
       });
+    },
+    async uploadBackground() {
+      // console.log(document.querySelector("#backgroundFile"));
+      // FileService;
+      // return;
+      const formData = new FormData();
+      formData.append("file", document.querySelector("#backgroundFile").files[0]);
+
+      FileService.uploadBackground(window.location.host, formData)
+        .then((res) => {
+          console.log(res.data);
+          // let data = {
+          //   clueUnusedValue: res.data.src,
+          //   clueUnusedType: "Image",
+          // };
+        })
+        .catch((err) => {
+          console.error(err);
+        });
+
+      // await axios
+      //   .post(`/api/files/upload/${filepath}`, formData)
+      //   .then((res) => {
+      //     console.log(res.data);
+      //     let data = {
+      //       clueUnusedValue: res.data.src,
+      //       clueUnusedType: "Image",
+      //     };
+
+      //     // TODO: Get this to update
+      //     // this.$set(this.room, "clueUnusedType", data.clueUnusedType);
+      //     // TODO: Get this to update
+      //     // this.$set(this.room, "clueUnusedValue", data.clueUnusedValue);
+
+      //     axios
+      //       .put(`/api/rooms/${this.$route.params.room}`, {
+      //         ...data,
+      //       })
+      //       .then((response) => {
+      //         console.log(response.data);
+      //       })
+      //       .catch((err) => {
+      //         console.error(err);
+      //       });
+      //   })
+      //   .catch((err) => {
+      //     console.error(err);
+      //   });
     },
   },
   mounted() {

@@ -1,5 +1,5 @@
 <template>
-  <div id="dashboard">
+  <div id="dashboard" class="">
     <ul>
       <li>
         <p>{{ topText }}</p>
@@ -40,10 +40,13 @@ export default {
     },
   },
   mounted() {
-    console.log();
     document.querySelector("nav").hidden = true;
+
     this.getDashboard();
     setInterval(this.getDashboard, 10000);
+
+    document.getElementById("dashboard").style.backgroundImage =
+      "url(/files/" + window.location.host + ".jpg)";
   },
   unmounted() {
     document.querySelector("nav").hidden = false;
@@ -64,6 +67,10 @@ p {
   height: 100vh;
   width: 100vw;
   background-color: black;
+  /* background-image: url("/files/localhost:8080.jpg"); */
+  background-repeat: no-repeat;
+  background-size: cover;
+  text-align: center;
 }
 li {
   height: 30vh;
