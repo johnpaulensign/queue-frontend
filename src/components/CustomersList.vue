@@ -1,6 +1,7 @@
 <template>
   <div class="list row">
-    <h4>Customers</h4>
+    <h3 class="my-3">Customers</h3>
+    <hr class="col" />
     <div class="col-md-8">
       <div class="input-group mb-3">
         <input
@@ -63,7 +64,7 @@
     </div>
     <div class="col-md-6">
       <div v-if="currentCustomer">
-        <h4>Customer</h4>
+        <h3>Customer</h3>
         <div>
           <label><strong>Name:</strong></label> {{ currentCustomer.name }}
         </div>
@@ -106,11 +107,17 @@
   </div>
 </template>
 
-<style>
+<style scoped>
 .list {
   text-align: left;
   max-width: 750px;
   margin: auto;
+}
+.row {
+  margin-bottom: 10px;
+  padding: 10px;
+  border: 1px solid;
+  background-color: #00000010;
 }
 </style>
 

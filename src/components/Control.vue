@@ -1,7 +1,8 @@
 <template>
   <div class="container">
     <form class="row" @submit.prevent="updateDashboard">
-      <h4>Queue Control</h4>
+      <h3 class="my-3">Queue Control</h3>
+      <hr class="col" />
       <label for="ticketStart">Ticket Start</label>
       <div class="mb-3" v-if="timeBased">
         <select class="col-3 mr-2 p-2" v-model="ticketStartHour">
@@ -38,29 +39,47 @@
         PM
       </div>
       <input v-else type="number" name="ticketEnd" id="ticketEnd" v-model="ticketEnd" />
-      <input type="submit" value="Update Dashboard / Send Texts" />
+      <input
+        type="submit"
+        class="btn btn-success"
+        value="Update Dashboard / Send Texts"
+      />
     </form>
     <form class="row" @submit.prevent="updateConfiguration">
-      <h4>Dashboard Text</h4>
+      <h3 class="my-3">Dashboard Text</h3>
+      <hr class="col" />
       <label for="topText">Top Text</label>
       <input type="text" name="topText" id="topText" v-model="topText" />
       <label for="bottomText">Bottom Text</label>
       <input type="text" name="bottomText" id="bottomText" v-model="bottomText" />
-      <input type="submit" value="Update Dashboard Text" />
+      <input type="submit" class="btn btn-success" value="Update Dashboard Text" />
     </form>
     <div class="row">
-      <h4>Upload Background Image</h4>
-      <input type="file" placeholder="Upload background image" id="backgroundFile" />
-      <input type="submit" @click="uploadBackground" value="Upload" />
+      <h3 class="my-3">Upload Background Image</h3>
+      <hr class="col" />
+      <input
+        @input="setBackgroundFile"
+        type="file"
+        placeholder="Upload background image"
+        id="backgroundFile"
+      />
+      <input
+        type="submit"
+        :disabled="backgroundFile == null"
+        class="btn btn-primary"
+        @click="uploadBackground"
+        value="Upload"
+      />
     </div>
     <div class="row">
-      <h4>Danger Zone</h4>
+      <h3 class="my-3">Danger Zone</h3>
+      <hr class="col" />
       <!-- TODO: Show number of customers -->
       <!-- TODO: Confirmation -->
-      <button v-if="!timeBased" @click="switchToTimeBased">
+      <button class="btn btn-danger" v-if="!timeBased" @click="switchToTimeBased">
         Switch to time based (deletes all customers)
       </button>
-      <button v-else @click="switchToTicketBased">
+      <button class="btn btn-danger" v-else @click="switchToTicketBased">
         Switch to ticket based (deletes all customers)
       </button>
     </div>
@@ -75,8 +94,11 @@ select {
 input {
   margin-bottom: 15px;
 }
-h4 {
+h3 {
   margin-top: 10px;
+}
+.row {
+  border: 1px solid;
 }
 </style>
 
@@ -140,11 +162,6 @@ export default {
       for (let i = 0; i < 12; i++) {
         let hour = i + 1;
         let minute = i * 5;
-        // if (hour < 10) {
-        //   hour = `0${hour}`;
-        // } else {
-        //   hour = `${hour}`;
-        // }
         if (minute < 10) {
           minute = `0${minute}`;
         } else {
@@ -158,6 +175,9 @@ export default {
       this.hours = hours;
       this.minutes = minutes;
     },
+    setBackgroundFile() {
+      this.backgroundFile = document.querySelector("#backgroundFile").files[0];
+    },
     switchToTimeBased() {
       if (!confirm("Are you sure you? All customers will be deleted!")) {
         return;
@@ -168,7 +188,8 @@ export default {
         ticketEnd: "1:00",
       }).then(() => {
         CustomerDataService.deleteAll().then(() => {
-          window.location.reload();
+          this.timeBased = true;
+          this.$emit("refreshCustomers");
         });
       });
     },
@@ -182,24 +203,20 @@ export default {
         ticketEnd: "0",
       }).then(() => {
         CustomerDataService.deleteAll().then(() => {
-          window.location.reload();
+          this.timeBased = false;
+          this.$emit("refreshCustomers");
         });
       });
     },
     async uploadBackground() {
-      // console.log(document.querySelector("#backgroundFile"));
-      // FileService;
-      // return;
       const formData = new FormData();
-      formData.append("file", document.querySelector("#backgroundFile").files[0]);
+      formData.append("file", this.backgroundFile);
 
       FileService.uploadBackground(window.location.host, formData)
         .then((res) => {
           console.log(res.data);
-          // let data = {
-          //   clueUnusedValue: res.data.src,
-          //   clueUnusedType: "Image",
-          // };
+          this.backgroundFile = null;
+          document.querySelector("#backgroundFile").value = null;
         })
         .catch((err) => {
           console.error(err);
@@ -257,8 +274,13 @@ export default {
 };
 </script>
 
-<style>
+<style scoped>
 label {
   margin-right: 20px;
+}
+.row {
+  margin-bottom: 10px;
+  padding: 10px;
+  background-color: #00000010;
 }
 </style>
