@@ -1,7 +1,7 @@
 <template>
   <div>
+    <h1 class="mb-3">Admin Panel</h1>
     <div v-if="authenticated">
-      <h1 class="mb-3">Admin Panel</h1>
       <div class="container">
         <div class="row">
           <div class="col-4">
@@ -13,11 +13,31 @@
         </div>
       </div>
     </div>
-    <div v-else>
+    <div v-else class="container mt-4">
       <form @submit.prevent="login">
-        <input type="text" name="username" id="username" v-model="username" /> <br />
-        <input type="password" name="password" id="password" v-model="password" /> <br />
-        <input type="submit" value="Login" />
+        <div class="row">
+          <label for="username" class="col">Username</label>
+          <input
+            type="text"
+            class="col"
+            name="username"
+            id="username"
+            v-model="username"
+          />
+        </div>
+        <div class="row">
+          <label class="col" for="password">Password</label>
+          <input
+            class="col"
+            type="password"
+            name="password"
+            id="password"
+            v-model="password"
+          />
+        </div>
+        <div class="row">
+          <input class="col" type="submit" value="Login" />
+        </div>
       </form>
     </div>
   </div>
@@ -68,5 +88,19 @@ export default {
 <style scoped>
 h1 {
   text-align: center;
+}
+.container {
+  width: 30%;
+}
+.row {
+  text-align: center;
+  align-items: center;
+}
+label {
+  font-size: 28px;
+}
+input {
+  margin-bottom: 15px;
+  height: 50px;
 }
 </style>
