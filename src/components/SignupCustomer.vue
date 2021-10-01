@@ -65,8 +65,8 @@
       </form>
     </div>
 
-    <div v-else>
-      <h4>You submitted successfully!</h4>
+    <div class="row" v-else>
+      <h4>Submitted successfully!</h4>
     </div>
   </div>
 </template>
@@ -111,7 +111,7 @@ export default {
   },
   methods: {
     saveCustomer() {
-      if (this.phone && this.phone.length != 10) {
+      if ((this.phone && this.phone.length != 10) || isNaN(parseInt(this.phone))) {
         this.phoneLabelError = "10 digits required, e.g. 4145551234";
         return;
       }

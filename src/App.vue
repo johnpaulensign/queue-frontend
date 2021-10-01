@@ -2,7 +2,7 @@
   <div id="app">
     <nav class="navbar navbar-expand navbar-dark bg-dark">
       <router-link to="/" class="navbar-brand">Queue Management</router-link>
-      <div class="navbar-nav mr-auto">
+      <ul class="navbar-nav mr-auto">
         <li class="nav-item">
           <router-link to="/admin" class="nav-link">Admin</router-link>
         </li>
@@ -14,7 +14,7 @@
         <li class="nav-item">
           <router-link to="/signup" class="nav-link">Sign Up</router-link>
         </li>
-      </div>
+      </ul>
     </nav>
 
     <div class="ml-3 mt-3">
