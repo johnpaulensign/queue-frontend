@@ -1,5 +1,8 @@
 <template>
   <div>
+    <div v-if="authenticated" style="float: right" class="mr-3">
+      <button @click="logout">Logout</button>
+    </div>
     <h1 class="mb-3">Admin Panel</h1>
     <div v-if="authenticated">
       <div class="container">
@@ -13,7 +16,7 @@
         </div>
       </div>
     </div>
-    <div v-else class="container mt-4">
+    <div v-else id="loginForm" class="container mt-4">
       <form @submit.prevent="login">
         <div class="row">
           <label for="username" class="col">Username</label>
@@ -59,6 +62,9 @@ export default {
     };
   },
   methods: {
+    logout() {
+      window.location.replace("/api/logout");
+    },
     login() {
       LoginDataService.login(this.username, this.password)
         .then((response) => {
@@ -89,17 +95,17 @@ export default {
 h1 {
   text-align: center;
 }
-.container {
+#loginForm.container {
   width: 30%;
 }
-.row {
+#loginForm.row {
   text-align: center;
   align-items: center;
 }
-label {
+#loginForm label {
   font-size: 28px;
 }
-input {
+#loginForm input {
   margin-bottom: 15px;
   height: 50px;
 }
