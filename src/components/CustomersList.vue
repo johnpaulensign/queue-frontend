@@ -27,6 +27,9 @@
     <div class="col-md-6">
       <h5>Waiting</h5>
       <ul class="list-group">
+        <li v-if="waitingCustomers.length == 0" class="list-group-item">
+          No customers to show
+        </li>
         <li
           class="list-group-item"
           :class="{ active: index == currentWaitingIndex }"
@@ -41,7 +44,10 @@
       </ul>
 
       <h5 class="mt-3">Notified</h5>
-      <ul class="list-group">
+      <ul class="list-group mb-3">
+        <li v-if="notifiedCustomers.length == 0" class="list-group-item">
+          No customers to show
+        </li>
         <li
           class="list-group-item"
           :class="{ active: index == currentNotifiedIndex }"
@@ -146,9 +152,13 @@ export default {
     },
 
     setActiveCustomer(customer, index) {
-      this.currentCustomer = customer;
       this.currentNotifiedIndex = -1;
       this.currentWaitingIndex = -1;
+      if (this.currentCustomer == customer) {
+        this.currentCustomer = null;
+        return;
+      }
+      this.currentCustomer = customer;
       if (customer && customer.notificationDate == null) {
         this.currentWaitingIndex = customer ? index : -1;
       } else {
