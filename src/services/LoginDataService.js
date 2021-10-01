@@ -4,8 +4,8 @@ class LoginDataService {
     get() {
       return http.get(`/login`);
     }
-    login(username, password) {
-      return http.post(`/login`, {username, password});
+    login(hostname, username, password) {
+      return http.post(`/login`, {hostname, username, password});
     }
 
 //   update(hostname, data) {

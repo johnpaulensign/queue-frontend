@@ -66,7 +66,7 @@ export default {
       window.location.replace("/api/logout");
     },
     login() {
-      LoginDataService.login(this.username, this.password)
+      LoginDataService.login(window.location.host, this.username, this.password)
         .then((response) => {
           console.log("Success:", response);
           this.authenticated = true;
