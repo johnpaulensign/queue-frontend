@@ -1,9 +1,13 @@
 <template>
-  <div class="list row">
-    <h3 class="my-3">Customers</h3>
-    <hr class="col" />
-    <div class="col-md-8">
-      <div class="input-group mb-3">
+  <div class="container p-3">
+    <div class="row">
+      <h3 class="mt-3 mb-0 mx-3">Customers</h3>
+    </div>
+    <div class="row">
+      <hr class="col mx-3 my-0" />
+    </div>
+    <div class="row">
+      <div class="col input-group mb-3">
         <input
           type="text"
           class="form-control"
@@ -25,44 +29,8 @@
         </div>
       </div>
     </div>
-    <div class="col-md-6">
-      <h5>Waiting</h5>
-      <ul class="list-group">
-        <li v-if="waitingCustomers.length == 0" class="list-group-item">
-          No customers to show
-        </li>
-        <li
-          class="list-group-item"
-          :class="{ active: index == currentWaitingIndex }"
-          v-for="(customer, index) in waitingCustomers"
-          :key="index"
-          @click="setActiveCustomer(customer, index)"
-        >
-          {{ customer.name ? customer.name + " - " : "" }} {{ customer.ticketNumber }}
-          <span style="float: right" v-if="customer.notificationDate != null">√</span>
-          <span style="float: right" v-else>X</span>
-        </li>
-      </ul>
 
-      <h5 class="mt-3">Notified</h5>
-      <ul class="list-group mb-3">
-        <li v-if="notifiedCustomers.length == 0" class="list-group-item">
-          No customers to show
-        </li>
-        <li
-          class="list-group-item"
-          :class="{ active: index == currentNotifiedIndex }"
-          v-for="(customer, index) in notifiedCustomers"
-          :key="index"
-          @click="setActiveCustomer(customer, index)"
-        >
-          {{ customer.name ? customer.name + " - " : "" }} {{ customer.ticketNumber }}
-          <span style="float: right" v-if="customer.notificationDate != null">√</span>
-          <span style="float: right" v-else>X</span>
-        </li>
-      </ul>
-    </div>
-    <div class="col-md-6">
+    <div class="row">
       <div v-if="currentCustomer">
         <h3>Customer</h3>
         <div>
@@ -96,12 +64,52 @@
         >
       </div>
       <div v-else-if="customers.length > 0">
-        <br />
         <p>Please click on a customer</p>
       </div>
       <div v-else>
-        <br />
         <p>No customers found</p>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col">
+        <h5>Waiting</h5>
+        <ul class="list-group">
+          <li v-if="waitingCustomers.length == 0" class="list-group-item">
+            No customers to show
+          </li>
+          <li
+            class="list-group-item"
+            :class="{ active: index == currentWaitingIndex }"
+            v-for="(customer, index) in waitingCustomers"
+            :key="index"
+            @click="setActiveCustomer(customer, index)"
+          >
+            {{ customer.name ? customer.name + " - " : "" }} {{ customer.ticketNumber }}
+            <span style="float: right" v-if="customer.notificationDate != null">√</span>
+            <span style="float: right" v-else>X</span>
+          </li>
+        </ul>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col">
+        <h5>Notified</h5>
+        <ul class="list-group">
+          <li v-if="notifiedCustomers.length == 0" class="list-group-item">
+            No customers to show
+          </li>
+          <li
+            class="list-group-item"
+            :class="{ active: index == currentNotifiedIndex }"
+            v-for="(customer, index) in notifiedCustomers"
+            :key="index"
+            @click="setActiveCustomer(customer, index)"
+          >
+            {{ customer.name ? customer.name + " - " : "" }} {{ customer.ticketNumber }}
+            <span style="float: right" v-if="customer.notificationDate != null">√</span>
+            <span style="float: right" v-else>X</span>
+          </li>
+        </ul>
       </div>
     </div>
   </div>
@@ -113,7 +121,7 @@
   max-width: 750px;
   margin: auto;
 }
-.row {
+.container {
   margin-bottom: 10px;
   padding: 10px;
   border: 1px solid;
