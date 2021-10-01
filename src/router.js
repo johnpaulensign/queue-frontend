@@ -7,16 +7,6 @@ const routes = [
     component: () => import("./components/Admin"),
   },
   {
-    path: "/admin/customers",
-    name: "customers",
-    component: () => import("./components/CustomersList"),
-  },
-  {
-    path: "/admin/control",
-    name: "control",
-    component: () => import("./components/Control"),
-  },
-  {
     path: "/dashboard",
     name: "dashboard",
     component: () => import("./components/Dashboard"),

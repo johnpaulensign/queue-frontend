@@ -1,86 +1,84 @@
 <template>
-  <div>
-    <h4>Queue Control</h4>
-    <form @submit.prevent="updateDashboard">
+  <div class="container">
+    <form class="row" @submit.prevent="updateDashboard">
+      <h4>Queue Control</h4>
       <label for="ticketStart">Ticket Start</label>
+      <div class="mb-3" v-if="timeBased">
+        <select class="col-3 mr-2 p-2" v-model="ticketStartHour">
+          <option :key="hour" v-for="hour in this.hours" :value="hour">
+            {{ hour }}
+          </option>
+        </select>
+        <select class="col-3 p-2" v-model="ticketStartMinute">
+          <option :key="minute" v-for="minute in this.minutes" :value="minute">
+            {{ minute }}
+          </option>
+        </select>
+        PM
+      </div>
       <input
-        v-if="!timeBased"
+        v-else
         type="text"
         name="ticketStart"
         id="ticketStart"
         v-model="ticketStart"
       />
-      <div v-else>
-        <select v-model="ticketStartHour">
-          <option :key="hour" v-for="hour in this.hours" :value="hour">
-            {{ hour }}
-          </option>
-        </select>
-        <select v-model="ticketStartMinute">
-          <option :key="minute" v-for="minute in this.minutes" :value="minute">
-            {{ minute }}
-          </option>
-        </select>
-        PM
-      </div>
-      <br />
       <label for="ticketEnd">Ticket End</label>
-      <input
-        v-if="!timeBased"
-        type="text"
-        name="ticketEnd"
-        id="ticketEnd"
-        v-model="ticketEnd"
-      />
-      <div v-else>
-        <select v-model="ticketEndHour">
+      <div v-if="timeBased" class="mb-3">
+        <select class="col-3 mr-2 p-2" v-model="ticketEndHour">
           <option :key="hour" v-for="hour in this.hours" :value="hour">
             {{ hour }}
           </option>
         </select>
-        <select v-model="ticketEndMinute">
+        <select class="col-3 p-2" v-model="ticketEndMinute">
           <option :key="minute" v-for="minute in this.minutes" :value="minute">
             {{ minute }}
           </option>
         </select>
         PM
       </div>
-      <br />
-      <input type="submit" />
+      <input v-else type="text" name="ticketEnd" id="ticketEnd" v-model="ticketEnd" />
+      <input type="submit" value="Update Dashboard / Send Texts" />
     </form>
-    <br />
-    <br />
-    <br />
-    <h4>Dashboard Text</h4>
-    <form @submit.prevent="updateConfiguration">
+    <form class="row" @submit.prevent="updateConfiguration">
+      <h4>Dashboard Text</h4>
       <label for="topText">Top Text</label>
       <input type="text" name="topText" id="topText" v-model="topText" />
-      <br />
       <label for="bottomText">Bottom Text</label>
       <input type="text" name="bottomText" id="bottomText" v-model="bottomText" />
-      <br />
-      <input type="submit" />
+      <input type="submit" value="Update Dashboard Text" />
     </form>
-    <br />
-    <br />
-    <br />
-    <h4>Upload Background Image</h4>
-    <input type="file" placeholder="Upload background image" id="backgroundFile" /> <br />
-    <input type="submit" @click="uploadBackground" />
-    <br />
-    <br />
-    <br />
-    <h4>Danger Zone</h4>
-    <!-- TODO: Show number of customers -->
-    <!-- TODO: Confirmation -->
-    <button v-if="!timeBased" @click="switchToTimeBased">
-      Switch to time based (deletes all customers)
-    </button>
-    <button v-else @click="switchToTicketBased">
-      Switch to ticket based (deletes all customers)
-    </button>
+    <div class="row">
+      <h4>Upload Background Image</h4>
+      <input type="file" placeholder="Upload background image" id="backgroundFile" />
+      <input type="submit" @click="uploadBackground" value="Upload" />
+    </div>
+    <div class="row">
+      <h4>Danger Zone</h4>
+      <!-- TODO: Show number of customers -->
+      <!-- TODO: Confirmation -->
+      <button v-if="!timeBased" @click="switchToTimeBased">
+        Switch to time based (deletes all customers)
+      </button>
+      <button v-else @click="switchToTicketBased">
+        Switch to ticket based (deletes all customers)
+      </button>
+    </div>
   </div>
 </template>
+
+<style scoped>
+select {
+  text-align: center;
+  font-size: 18px;
+}
+input {
+  margin-bottom: 15px;
+}
+h4 {
+  margin-top: 10px;
+}
+</style>
 
 <script>
 import CustomerDataService from "../services/CustomerDataService";
@@ -158,6 +156,9 @@ export default {
       this.minutes = minutes;
     },
     switchToTimeBased() {
+      if (!confirm("Are you sure you? All customers will be deleted!")) {
+        return;
+      }
       DashboardDataService.update(window.location.host, {
         timeBased: true,
         ticketStart: "1:00",
@@ -169,6 +170,9 @@ export default {
       });
     },
     switchToTicketBased() {
+      if (!confirm("Are you sure you? All customers will be deleted!")) {
+        return;
+      }
       DashboardDataService.update(window.location.host, {
         timeBased: false,
         ticketStart: "0",

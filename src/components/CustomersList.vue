@@ -2,27 +2,32 @@
   <div class="list row">
     <div class="col-md-8">
       <div class="input-group mb-3">
-        <input type="text" class="form-control" placeholder="Search by name, phone number, or email..."
-          v-model="query"/>
+        <input
+          type="text"
+          class="form-control"
+          placeholder="Search by name, phone number, or email..."
+          v-model="query"
+        />
         <div class="input-group-append">
-          <button class="btn btn-outline-secondary" type="button"
-            @click="search"
-          >
+          <button class="btn btn-outline-secondary" type="button" @click="search">
             Search
           </button>
         </div>
       </div>
     </div>
     <div class="col-md-6">
-      <h4>Customers List</h4>
+      <!-- <h4>Customer List</h4> -->
       <ul class="list-group">
-        <li class="list-group-item"
+        <li
+          class="list-group-item"
           :class="{ active: index == currentIndex }"
           v-for="(customer, index) in customers"
           :key="index"
           @click="setActiveCustomer(customer, index)"
         >
-          {{ customer.name }}
+          {{ customer.name }} - {{ customer.ticketNumber }}
+          <span style="float: right" v-if="customer.notificationDate != null">√</span>
+          <span style="float: right" v-else>X</span>
         </li>
       </ul>
 
@@ -43,10 +48,25 @@
           <label><strong>Email:</strong></label> {{ currentCustomer.email }}
         </div>
         <div>
-          <label><strong>Ticket Number:</strong></label> {{ currentCustomer.ticketNumber }}
+          <label><strong>Ticket Number:</strong></label>
+          {{ currentCustomer.ticketNumber }}
+        </div>
+        <div>
+          <label><strong>Notification Sent:</strong></label>
+          {{
+            currentCustomer.notificationDate
+              ? new Date(currentCustomer.notificationDate).toLocaleDateString() +
+                " " +
+                new Date(currentCustomer.notificationDate).toLocaleTimeString()
+              : "Not sent"
+          }}
         </div>
 
-        <router-link :to="'/admin/customers/' + currentCustomer.id" class="badge badge-warning">Edit</router-link>
+        <router-link
+          :to="'/admin/customers/' + currentCustomer.id"
+          class="badge badge-warning"
+          >Edit</router-link
+        >
       </div>
       <div v-else-if="customers.length > 0">
         <br />
@@ -60,6 +80,14 @@
   </div>
 </template>
 
+<style>
+.list {
+  text-align: left;
+  max-width: 750px;
+  margin: auto;
+}
+</style>
+
 <script>
 import CustomerDataService from "../services/CustomerDataService";
 
@@ -70,17 +98,17 @@ export default {
       customers: [],
       currentCustomer: null,
       currentIndex: -1,
-      query: ""
+      query: "",
     };
   },
   methods: {
     retrieveCustomers() {
       CustomerDataService.getAll()
-        .then(response => {
+        .then((response) => {
           this.customers = response.data;
           console.log(response.data);
         })
-        .catch(e => {
+        .catch((e) => {
           console.log(e);
         });
     },
@@ -98,37 +126,29 @@ export default {
 
     removeAllCustomers() {
       CustomerDataService.deleteAll()
-        .then(response => {
+        .then((response) => {
           console.log(response.data);
           this.refreshList();
         })
-        .catch(e => {
+        .catch((e) => {
           console.log(e);
         });
     },
 
     search() {
       CustomerDataService.findByAny(this.query)
-        .then(response => {
+        .then((response) => {
           this.customers = response.data;
           this.setActiveCustomer(null);
           console.log(response.data);
         })
-        .catch(e => {
+        .catch((e) => {
           console.log(e);
         });
-    }
+    },
   },
   mounted() {
     this.retrieveCustomers();
-  }
+  },
 };
 </script>
-
-<style>
-.list {
-  text-align: left;
-  max-width: 750px;
-  margin: auto;
-}
-</style>

@@ -1,63 +1,67 @@
 <template>
-  <div class="submit-form">
+  <div class="container submit-form">
     <div v-if="!submitted">
-      <div class="form-group">
-        <label for="name">Name</label>
-        <input
-          type="text"
-          class="form-control"
-          id="name"
-          required
-          v-model="name"
-          name="name"
-        />
-      </div>
+      <form @submit.prevent="saveCustomer">
+        <div class="row form-group">
+          <label for="name">Name</label>
+          <input type="text" class="form-control" id="name" v-model="name" name="name" />
+        </div>
 
-      <div class="form-group">
-        <label for="phone">Phone</label>
-        <input class="form-control" id="phone" required v-model="phone" name="phone" />
-      </div>
-
-      <div class="form-group">
-        <label for="email">Email</label>
-        <input class="form-control" id="email" required v-model="email" name="email" />
-      </div>
-
-      <div class="form-group">
-        <!-- <input
-          class="form-control"
-          id="ticketNumber"
-          required
-          v-model="ticketNumber"
-          name="ticketNumber"
-        /> -->
-        <div v-if="!timeBased">
-          <label for="ticketNumber">Ticket Number</label>
+        <div class="row form-group">
+          <label for="phone">Phone</label>
           <input
-            type="text"
-            name="ticketNumber"
-            id="ticketNumber"
-            v-model="ticketNumber"
+            class="form-control"
+            id="phone"
+            type="tel"
+            v-model="phone"
+            name="phone"
           />
         </div>
 
-        <div v-else>
-          <label>Ticket Time</label>
-          <select v-model="ticketHour">
-            <option :key="hour" v-for="hour in this.hours" :value="hour">
-              {{ hour }}
-            </option>
-          </select>
-          <select v-model="ticketMinute">
-            <option :key="minute" v-for="minute in this.minutes" :value="minute">
-              {{ minute }}
-            </option>
-          </select>
-          PM
+        <div class="row form-group">
+          <label for="email">Email</label>
+          <input
+            class="form-control"
+            id="email"
+            type="email"
+            v-model="email"
+            name="email"
+          />
         </div>
 
-        <button @click="saveCustomer" class="btn btn-success">Submit</button>
-      </div>
+        <div>
+          <div v-if="timeBased" class="row">
+            <label>Ticket Time <strong style="color: red"> * </strong></label>
+            <select class="col mr-2" required v-model="ticketHour">
+              <option :key="hour" v-for="hour in this.hours" :value="hour">
+                {{ hour }}
+              </option>
+            </select>
+            <select class="col mr-2" required v-model="ticketMinute">
+              <option :key="minute" v-for="minute in this.minutes" :value="minute">
+                {{ minute }}
+              </option>
+            </select>
+            <span class="col" style="font-size: 25px">PM</span>
+          </div>
+
+          <div class="row" v-else>
+            <label for="ticketNumber"
+              >Ticket Number <strong style="color: red"> * </strong></label
+            >
+            <input
+              type="number"
+              name="ticketNumber"
+              id="ticketNumber"
+              required
+              v-model="ticketNumber"
+            />
+          </div>
+          <div class="row">
+            <input type="submit" class="btn btn-success" />
+          </div>
+        </div>
+      </form>
     </div>
 
     <div v-else>
@@ -65,6 +69,22 @@
     </div>
   </div>
 </template>
+
+<style>
+.submit-form {
+  max-width: 300px;
+  margin: auto;
+}
+
+.row {
+  margin-bottom: 20px;
+}
+
+select {
+  text-align: center;
+  font-size: 25px;
+}
+</style>
 
 <script>
 import CustomerDataService from "../services/CustomerDataService";
@@ -74,13 +94,11 @@ export default {
   name: "add-customer",
   data() {
     return {
-      // customer: {
       id: null,
       name: "",
       phone: "",
       email: "",
       ticketNumber: "",
-      // },
       minutes: [],
       hours: [],
       ticketHour: "1",
@@ -149,10 +167,3 @@ export default {
   },
 };
 </script>
-
-<style>
-.submit-form {
-  max-width: 300px;
-  margin: auto;
-}
-</style>
