@@ -111,8 +111,8 @@ export default {
   },
   methods: {
     saveCustomer() {
-      if (!this.phone || this.phone.length != 9) {
-        this.phoneLabelError = "9 digits required, e.g. 4145551234";
+      if (this.phone && this.phone.length != 10) {
+        this.phoneLabelError = "10 digits required, e.g. 4145551234";
         return;
       }
       this.phoneLabelError = "";

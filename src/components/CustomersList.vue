@@ -190,6 +190,7 @@ export default {
     },
     startRefresh() {
       this.retrieveCustomers();
+      this.query = "";
       if (this.interval == null) {
         this.interval = setInterval(() => {
           this.retrieveCustomers();
