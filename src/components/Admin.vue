@@ -7,10 +7,10 @@
     <div v-if="authenticated">
       <div class="container">
         <div class="row">
-          <div class="col-4">
+          <div class="col-sm mb-4">
             <control @refreshCustomers="refreshCustomers"></control>
           </div>
-          <div class="col-8">
+          <div class="col-md">
             <customers-list ref="customerList"></customers-list>
           </div>
         </div>

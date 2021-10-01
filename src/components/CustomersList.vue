@@ -1,5 +1,6 @@
 <template>
   <div class="list row">
+    <h4>Customers</h4>
     <div class="col-md-8">
       <div class="input-group mb-3">
         <input
@@ -24,7 +25,7 @@
       </div>
     </div>
     <div class="col-md-6">
-      <h4>Waiting</h4>
+      <h5>Waiting</h5>
       <ul class="list-group">
         <li
           class="list-group-item"
@@ -39,7 +40,7 @@
         </li>
       </ul>
 
-      <h4 class="mt-3">Notified</h4>
+      <h5 class="mt-3">Notified</h5>
       <ul class="list-group">
         <li
           class="list-group-item"
