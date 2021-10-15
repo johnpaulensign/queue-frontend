@@ -58,7 +58,7 @@ export default {
 
 <style scoped>
 p {
-  font-size: 8vw;
+  font-size: 4vw;
   color: white;
 }
 
