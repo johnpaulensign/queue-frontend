@@ -45,7 +45,7 @@ export default {
     document.querySelector("nav").hidden = true;
 
     this.getDashboard();
-    setInterval(this.getDashboard, 10000);
+    setInterval(this.getDashboard, 30000);
 
     document.getElementById("dashboard").style.backgroundImage =
       "url(/files/" + window.location.host + ".jpg)";
