@@ -5,7 +5,7 @@
         <p>{{ topText }}</p>
       </li>
       <li>
-        <p>{{ ticketStart }} - {{ ticketEnd }}</p>
+        <p class="ticket-number">{{ ticketStart }} - {{ ticketEnd }}</p>
       </li>
       <li>
         <p>{{ bottomText }}</p>
@@ -25,6 +25,7 @@ export default {
       ticketEnd: 0,
       topText: "Loading...",
       bottomText: "Loading...",
+      timeBased: false,
     };
   },
   methods: {
@@ -36,6 +37,7 @@ export default {
         this.ticketEnd = dashboard.ticketEnd;
         this.topText = dashboard.topText;
         this.bottomText = dashboard.bottomText;
+        this.timeBased = dashboard.timeBased;
       });
     },
   },
@@ -56,8 +58,12 @@ export default {
 
 <style scoped>
 p {
-  font-size: 8vh;
+  font-size: 8vw;
   color: white;
+}
+
+.ticket-number {
+  font-size: 15vw;
 }
 
 #dashboard {
