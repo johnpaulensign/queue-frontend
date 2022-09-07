@@ -2,13 +2,47 @@
   <div id="dashboard" class="">
     <ul>
       <li>
-        <p>{{ topText }}</p>
+        <div class="card">
+          <span></span>
+          <p class="card-text">{{ topText }}</p>
+          <span></span>
+        </div>
       </li>
-      <li>
-        <p class="ticket-number">{{ ticketStart }} - {{ ticketEnd }}</p>
+      <li v-if="useLanes === false">
+        <div class="card">
+          <span></span>
+          <p class="card-text ticket-number">{{ ticketStart }} - {{ ticketEnd }}</p>
+          <span></span>
+        </div>
       </li>
-      <li>
-        <p>{{ bottomText }}</p>
+      <li v-else-if="timeBased && useLanes">
+        <div class="card">
+          <span></span>
+          <p class="card-text ticket-number">{{ ticketStart }}</p>
+          <span></span>
+        </div>
+      </li>
+      <li v-if="useLanes === false">
+        <div class="card">
+          <span></span>
+          <p class="card-text">{{ bottomText }}</p>
+          <span></span>
+        </div>
+      </li>
+      <li v-else>
+        <div class="lane-card">
+          <div :key="lane" v-for="lane in numberOfLanes" class="card-text">
+            <p>
+              Lane {{lane}}
+            </p>
+            <p class="mb-0">
+              {{getTimeIntervalByLane(lane)}}
+            </p>
+            <p class="m-0">
+              &darr;
+            </p>
+          </div>
+        </div>
       </li>
     </ul>
   </div>
@@ -26,6 +60,10 @@ export default {
       topText: "Loading...",
       bottomText: "Loading...",
       timeBased: false,
+      sendNotifications: false,
+      useLanes: false,
+      numberOfLanes: 4,
+      laneInterval: 5
     };
   },
   methods: {
@@ -38,8 +76,27 @@ export default {
         this.topText = dashboard.topText;
         this.bottomText = dashboard.bottomText;
         this.timeBased = dashboard.timeBased;
+        this.sendNotifications = dashboard.sendNotifications;
+        this.useLanes = dashboard.useLanes;
+        this.numberOfLanes = dashboard.numberOfLanes;
+        this.laneInterval = dashboard.laneInterval;
       });
     },
+    getTimeIntervalByLane(lane) {
+      let hour = parseInt(this.ticketStart.toString().split(':')[0]);
+      let minutes = parseInt(this.ticketStart.toString().split(':')[1]);
+      console.log(minutes)
+      minutes += this.laneInterval * lane;
+      while(minutes >= 60) {
+        hour += 1;
+        minutes -= 60;
+      }
+      if(hour > 12) {
+        hour -= 12;
+      }
+
+      return hour + ":" + (minutes < 10 ? "0" + minutes.toString() : minutes.toString());
+    }
   },
   mounted() {
     document.querySelector("nav").hidden = true;
@@ -52,20 +109,11 @@ export default {
   },
   unmounted() {
     document.querySelector("nav").hidden = false;
-  },
+  }
 };
 </script>
 
 <style scoped>
-p {
-  font-size: 4vw;
-  color: white;
-}
-
-.ticket-number {
-  font-size: 15vw;
-}
-
 #dashboard {
   position: absolute;
   top: 0;
@@ -73,17 +121,48 @@ p {
   height: 100vh;
   width: 100vw;
   background-color: black;
-  /* background-image: url("/files/localhost:8080.jpg"); */
   background-repeat: no-repeat;
   background-size: cover;
   text-align: center;
 }
+
+
+ul {
+  padding-left: 0 !important;
+}
+
 li {
   height: 30vh;
   display: flex;
-  justify-content: center;
+  justify-content: space-around;
   align-content: center;
   flex-direction: column;
-  /* Column | row */
+}
+
+p {
+  font-size: 4vw;
+  color: white;
+}
+
+.card {
+  display: flex;
+  flex-direction: row;
+  background-color: rgba(0, 0, 0, 0);
+  border: none;
+  justify-content: space-around;
+}
+
+.card-text {
+  background-color: rgba(0, 0, 0, 0.25);
+  padding: 10px;
+}
+
+.ticket-number {
+  font-size: 15vw;
+}
+
+.lane-card {
+  display: flex;
+  justify-content: space-around;
 }
 </style>

@@ -1,7 +1,7 @@
 <template>
   <div class="container p-3">
     <div class="row">
-      <h3 class="mt-3 mb-0 mx-3">Customers</h3>
+      <h3 class="mt-3 mb-0 mx-2">Customers</h3>
     </div>
     <div class="row">
       <hr class="col mx-3 my-0" />
@@ -31,8 +31,8 @@
     </div>
 
     <div class="row">
-      <div v-if="currentCustomer">
-        <h3>Customer</h3>
+      <div v-if="currentCustomer" class="mx-2 mb-5">
+        <h3 >Customer</h3>
         <div>
           <label><strong>Name:</strong></label> {{ currentCustomer.name }}
         </div>
@@ -64,15 +64,15 @@
         >
       </div>
       <div v-else-if="customers.length > 0">
-        <p>Please click on a customer</p>
+        <p class="mx-1">Click on a customer to view / edit record</p>
       </div>
       <div v-else>
-        <p>No customers found</p>
+        <p class="mx-1">No customers found</p>
       </div>
     </div>
     <div class="row">
       <div class="col">
-        <h5>Waiting</h5>
+        <h5 class="mx-1">Waiting</h5>
         <ul class="list-group">
           <li v-if="waitingCustomers.length == 0" class="list-group-item">
             No customers to show
@@ -91,9 +91,9 @@
         </ul>
       </div>
     </div>
-    <div class="row">
+    <div class="row mt-4">
       <div class="col">
-        <h5>Notified</h5>
+        <h5 class="mx-1">Notified</h5>
         <ul class="list-group">
           <li v-if="notifiedCustomers.length == 0" class="list-group-item">
             No customers to show

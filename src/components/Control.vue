@@ -16,42 +16,87 @@
           </option>
         </select>
         PM
+        <input type="checkbox" class="ml-3" v-model="useLanes" /> Use Lanes
       </div>
-      <input
-        v-else
-        type="number"
-        name="ticketStart"
-        id="ticketStart"
-        v-model="ticketStart"
-      />
-      <label for="ticketEnd">Ticket End</label>
+      <div v-else>
+        <input
+          type="number"
+          name="ticketStart"
+          id="ticketStart"
+          v-model="ticketStart"
+          />
+      </div>
       <div v-if="timeBased" class="mb-3">
-        <select class="col-3 mr-2 p-2" v-model="ticketEndHour">
-          <option :key="hour" v-for="hour in this.hours" :value="hour">
-            {{ hour }}
-          </option>
-        </select>
-        <select class="col-3 p-2" v-model="ticketEndMinute">
-          <option :key="minute" v-for="minute in this.minutes" :value="minute">
-            {{ minute }}
-          </option>
-        </select>
-        PM
+        <div v-if="!useLanes">
+          <label for="ticketEnd">Ticket End</label>
+          <div>
+            <select class="col-3 mr-2 p-2" v-model="ticketEndHour">
+              <option :key="hour" v-for="hour in this.hours" :value="hour">
+                {{ hour }}
+              </option>
+            </select>
+            <select class="col-3 p-2" v-model="ticketEndMinute">
+              <option :key="minute" v-for="minute in this.minutes" :value="minute">
+                {{ minute }}
+              </option>
+            </select>
+            PM
+          </div>
+        </div>
+        <div v-else>
+          <label for="numberOfLanes">Number of Lanes</label>
+          <div>
+            <select class="col-3 p-2 mr-2 mb-2" v-model="numberOfLanes" id="numberOfLanes">
+              <option :key="lane" v-for="lane in 10" :value="lane">
+                {{ lane }}
+              </option>
+            </select>
+            Lanes
+          </div>
+
+          <label for="laneInterval">Lane Interval</label>
+          <div>
+            <select class="col-3 p-2 mr-2" v-model="laneInterval" id="laneInterval">
+              <option :key="interval" v-for="interval in intervals" :value="interval">
+                {{ interval }}
+              </option>
+            </select>
+            Minutes
+          </div>
+        </div>
       </div>
-      <input v-else type="number" name="ticketEnd" id="ticketEnd" v-model="ticketEnd" />
-      <input
-        type="submit"
-        class="btn btn-success"
-        value="Update Dashboard / Send Texts"
-      />
+      <div v-else>
+        <label for="ticketEnd">Ticket End</label>
+        <div>
+          <input type="number" name="ticketEnd" id="ticketEnd" v-model="ticketEnd" />
+        </div>
+      </div>
+      <div>
+        <label for="sendNotifications">Send Notifications to Customers</label>
+        <input type="checkbox" id="sendNotifications" v-model="sendNotifications" />
+      </div>
+      <div v-if="sendNotifications" class="col-12">
+        <input
+          type="submit"
+          class="btn btn-success col-12"
+          value="Update Dashboard / Send Notifications"
+        />
+      </div>
+      <div v-else class="col-12">
+        <input
+          type="submit"
+          class="btn btn-success col-12"
+          value="Update Dashboard"
+        />
+      </div>
     </form>
     <form class="row" @submit.prevent="updateConfiguration">
       <h3 class="my-3">Dashboard Text</h3>
       <hr class="col" />
       <label for="topText">Top Text</label>
       <input type="text" name="topText" id="topText" v-model="topText" />
-      <label for="bottomText">Bottom Text</label>
-      <input type="text" name="bottomText" id="bottomText" v-model="bottomText" />
+      <label for="bottomText">{{ useLanes ? "Bottom Text (does not show when using lanes)" : "Bottom Text"}}</label>
+      <input type="text" name="bottomText" id="bottomText" v-model="bottomText" :disabled="useLanes"/>
       <input type="submit" class="btn btn-success" value="Update Dashboard Text" />
     </form>
     <div class="row">
@@ -77,7 +122,7 @@
       <!-- TODO: Show number of customers -->
       <!-- TODO: Confirmation -->
       <button class="btn btn-danger" v-if="!timeBased" @click="switchToTimeBased">
-        Switch to time based (deletes all customers)
+        Switch to time based (needed to use lanes, deletes all customers)
       </button>
       <button class="btn btn-danger" v-else @click="switchToTicketBased">
         Switch to ticket based (deletes all customers)
@@ -113,6 +158,10 @@ export default {
     return {
       ticketStart: null,
       ticketEnd: null,
+      useLanes: false,
+      sendNotifications: false,
+      numberOfLanes: 4,
+      laneInterval: 5,
       topText: null,
       bottomText: null,
       timeBased: false,
@@ -123,6 +172,7 @@ export default {
       minutes: [],
       hours: [],
       backgroundFile: null,
+      intervals: [5, 10, 15, 20, 25, 30]
     };
   },
   methods: {
@@ -137,16 +187,33 @@ export default {
     updateDashboard() {
       let start = this.ticketStart;
       let end = this.ticketEnd;
+
       if (this.timeBased) {
         let times = this.getTimes();
         start = times.ticketStart;
         end = times.ticketEnd;
       }
-      DashboardDataService.update(window.location.host, {
+
+      let data = {
         ticketStart: start,
         ticketEnd: end,
         timeBased: this.timeBased,
-      }).then(() => {
+        useLanes: this.useLanes,
+        laneInterval: this.laneInterval,
+        numberOfLanes: this.numberOfLanes,
+        sendNotifications: this.sendNotifications
+      }
+
+      if(this.useLanes) {
+        this.bottomText = "";
+        data.bottomText = "";
+
+        this.ticketEnd = end;
+        data.ticketEnd = start;
+        this.setEndHourAndMinuteFields(start);
+      }
+
+      DashboardDataService.update(window.location.host, data).then(() => {
         this.$emit("refreshCustomers");
       });
     },
@@ -175,6 +242,14 @@ export default {
       this.hours = hours;
       this.minutes = minutes;
     },
+    setStartHourAndMinuteFields(start) {
+      this.ticketStartHour = start.split(":")[0];
+      this.ticketStartMinute = start.split(":")[1];
+    },
+    setEndHourAndMinuteFields(end) {
+      this.ticketEndHour = end.split(":")[0];
+      this.ticketEndMinute = end.split(":")[1];
+    },
     setBackgroundFile() {
       this.backgroundFile = document.querySelector("#backgroundFile").files[0];
     },
@@ -197,10 +272,12 @@ export default {
       if (!confirm("Are you sure you? All customers will be deleted!")) {
         return;
       }
+
       DashboardDataService.update(window.location.host, {
         timeBased: false,
         ticketStart: "0",
         ticketEnd: "0",
+        useLanes: false
       }).then(() => {
         CustomerDataService.deleteAll().then(() => {
           this.timeBased = false;
@@ -257,14 +334,15 @@ export default {
     DashboardDataService.get(window.location.host).then((response) => {
       const dashboard = response.data[0];
       this.topText = dashboard.topText;
-      this.bottomText = dashboard.bottomText;
+      this.useLanes = dashboard.useLanes;
+      this.bottomText = this.useLanes ? "" : dashboard.bottomText;
       this.timeBased = dashboard.timeBased;
-
+      this.sendNotifications = dashboard.sendNotifications;
       if (this.timeBased) {
-        this.ticketStartHour = dashboard.ticketStart.split(":")[0];
-        this.ticketStartMinute = dashboard.ticketStart.split(":")[1];
-        this.ticketEndHour = dashboard.ticketEnd.split(":")[0];
-        this.ticketEndMinute = dashboard.ticketEnd.split(":")[1];
+        this.setStartHourAndMinuteFields(dashboard.ticketStart);
+        this.setEndHourAndMinuteFields(dashboard.ticketEnd);
+        this.numberOfLanes = dashboard.numberOfLanes;
+        this.laneInterval = dashboard.laneInterval;
       } else {
         this.ticketStart = dashboard.ticketStart;
         this.ticketEnd = dashboard.ticketEnd;
