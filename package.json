@@ -5,6 +5,7 @@
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
+    "servedist": "serve -s dist/ -p 8081",
     "lint": "vue-cli-service lint",
     "clean": "gcloud compute ssh ensign_johnpaul@queue --command=\"rm -rf ./queue-frontend/dist/\"",
     "deploy": "gcloud compute scp --recurse dist/ ensign_johnpaul@queue:~/queue-frontend/",
