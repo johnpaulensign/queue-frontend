@@ -49,7 +49,7 @@
           <input type="number" name="ticketEnd" id="ticketEnd" v-model="ticketEnd" />
         </div>
       </div>
-      <div>
+      <div v-if="timeBased">
         <input type="checkbox" id="sendNotifications" class="mr-2" v-model="useLanes" />
         <label for="sendNotifications">Use Lanes</label>
         <div v-if="useLanes">
@@ -83,7 +83,7 @@
         />
       </div>
     </form>
-    <form class="row" v-if="useLanes" @submit.prevent="null">
+    <form class="row" v-if="timeBased && useLanes" @submit.prevent="null">
       <h3 class="my-3">Lane Management</h3>
       <div>
 
