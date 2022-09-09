@@ -145,7 +145,7 @@ li {
 }
 
 p {
-  font-size: 4vw;
+  font-size: 5vh;
   color: white;
 }
 
