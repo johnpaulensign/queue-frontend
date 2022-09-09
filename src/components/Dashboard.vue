@@ -133,6 +133,7 @@ ul {
   justify-content: space-around;
   align-content: center;
   flex-direction: column;
+  height: 100%;
 }
 
 li {
