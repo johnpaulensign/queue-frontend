@@ -129,6 +129,10 @@ export default {
 
 ul {
   padding-left: 0 !important;
+  display: flex;
+  justify-content: space-around;
+  align-content: center;
+  flex-direction: column;
 }
 
 li {
@@ -158,7 +162,7 @@ p {
 }
 
 .ticket-number {
-  font-size: 15vw;
+  font-size: 15vh;
 }
 
 .lane-card {
