@@ -1,6 +1,6 @@
 <template>
   <div class="container">
-    <form class="row" @submit.prevent="updateDashboard">
+    <form class="row" @submit.prevent="updateDashboard(null)">
       <h3 class="my-3">Queue Control</h3>
       <hr class="col" />
       <label for="ticketStart">Ticket Start</label>
@@ -16,7 +16,6 @@
           </option>
         </select>
         PM
-        <input type="checkbox" class="ml-3" v-model="useLanes" /> Use Lanes
       </div>
       <div v-else>
         <input
@@ -43,7 +42,17 @@
             PM
           </div>
         </div>
-        <div v-else>
+      </div>
+      <div v-else>
+        <label for="ticketEnd">Ticket End</label>
+        <div>
+          <input type="number" name="ticketEnd" id="ticketEnd" v-model="ticketEnd" />
+        </div>
+      </div>
+      <div>
+        <input type="checkbox" id="sendNotifications" class="mr-2" v-model="useLanes" />
+        <label for="sendNotifications">Use Lanes</label>
+        <div v-if="useLanes">
           <label for="numberOfLanes">Number of Lanes</label>
           <div>
             <select class="col-3 p-2 mr-2 mb-2" v-model="numberOfLanes" id="numberOfLanes">
@@ -53,27 +62,11 @@
             </select>
             Lanes
           </div>
-
-          <label for="laneInterval">Lane Interval</label>
-          <div>
-            <select class="col-3 p-2 mr-2" v-model="laneInterval" id="laneInterval">
-              <option :key="interval" v-for="interval in intervals" :value="interval">
-                {{ interval }}
-              </option>
-            </select>
-            Minutes
-          </div>
-        </div>
-      </div>
-      <div v-else>
-        <label for="ticketEnd">Ticket End</label>
-        <div>
-          <input type="number" name="ticketEnd" id="ticketEnd" v-model="ticketEnd" />
         </div>
       </div>
       <div>
+        <input type="checkbox" id="sendNotifications" class="mr-2" v-model="sendNotifications" />
         <label for="sendNotifications">Send Notifications to Customers</label>
-        <input type="checkbox" id="sendNotifications" v-model="sendNotifications" />
       </div>
       <div v-if="sendNotifications" class="col-12">
         <input
@@ -89,6 +82,44 @@
           value="Update Dashboard"
         />
       </div>
+    </form>
+    <form class="row" v-if="useLanes" @submit.prevent="null">
+      <h3 class="my-3">Lane Management</h3>
+      <div>
+
+
+          <label>Lane Times</label>
+          <div v-for="lane in numberOfLanes" :key="lane">
+            <select class="col-3 mr-2 p-2" :id="'laneHour'+lane" v-model="laneTimesEdit[lane].hour">
+              <option value="">Select Hour</option>
+              <option :key="hour" v-for="hour in this.hours" :value="hour">
+                {{ hour }}
+              </option>
+            </select>
+            <select class="col-3 p-2" :id="'laneMinute'+lane" v-model="laneTimesEdit[lane].minute">
+              <option value="">Select Minute</option>
+              <option :key="minute" v-for="minute in this.minutes" :value="minute">
+                {{ minute }}
+              </option>
+            </select>
+            <button
+              type="button"
+              class="btn btn-success ml-2"
+              @click="setLaneTime(lane)"
+              :disabled="laneTimesEdit[lane].hour == '' || laneTimesEdit[lane].minute == '' || laneTimesEdit[lane].hour + ':' + laneTimesEdit[lane].minute == laneTimes[lane]"
+            >
+              Set Time
+            </button>
+            <button
+              type="button"
+              class="btn btn-success ml-2"
+              @click="callLane(lane)"
+              :disabled="laneTimes[lane].length === 0 || laneTimesEdit[lane].hour + ':' + laneTimesEdit[lane].minute != laneTimes[lane]"
+            >
+              Call Lane {{lane}}
+            </button>
+          </div>
+        </div>
     </form>
     <form class="row" @submit.prevent="updateConfiguration">
       <h3 class="my-3">Dashboard Text</h3>
@@ -161,7 +192,6 @@ export default {
       useLanes: false,
       sendNotifications: false,
       numberOfLanes: 4,
-      laneInterval: 5,
       topText: null,
       bottomText: null,
       timeBased: false,
@@ -172,7 +202,45 @@ export default {
       minutes: [],
       hours: [],
       backgroundFile: null,
-      intervals: [5, 10, 15, 20, 25, 30]
+      laneTimes: ["", "", "", "", "", "", "", "", "", "", ""],
+      laneTimesEdit: [
+        {
+          hour: "", minute: ""
+        },
+        {
+          hour: "", minute: ""
+        },
+        {
+          hour: "", minute: ""
+        },
+        {
+          hour: "", minute: ""
+        },
+        {
+          hour: "", minute: ""
+        },
+        {
+          hour: "", minute: ""
+        },
+        {
+          hour: "", minute: ""
+        },
+        {
+          hour: "", minute: ""
+        },
+        {
+          hour: "", minute: ""
+        },
+        {
+          hour: "", minute: ""
+        },
+        {
+          hour: "", minute: ""
+        },
+        {
+          hour: "", minute: ""
+        },
+      ]
     };
   },
   methods: {
@@ -184,7 +252,7 @@ export default {
       });
       this.$emit("refreshCustomers");
     },
-    updateDashboard() {
+    updateDashboard(onlyUpdate = true) {
       let start = this.ticketStart;
       let end = this.ticketEnd;
 
@@ -199,9 +267,10 @@ export default {
         ticketEnd: end,
         timeBased: this.timeBased,
         useLanes: this.useLanes,
-        laneInterval: this.laneInterval,
         numberOfLanes: this.numberOfLanes,
-        sendNotifications: this.sendNotifications
+        sendNotifications: this.sendNotifications,
+        laneTimes: this.laneTimes.toString(),
+        onlyUpdate
       }
 
       if(this.useLanes) {
@@ -216,6 +285,27 @@ export default {
       DashboardDataService.update(window.location.host, data).then(() => {
         this.$emit("refreshCustomers");
       });
+    },
+    setLaneTime(lane) {
+      let hour = this.laneTimesEdit[lane].hour;
+      let minute = this.laneTimesEdit[lane].minute;
+      if(hour.length === 0 || minute.length === 0) {
+        return;
+      }
+      this.laneTimes[lane] = hour + ":" + minute;
+      this.updateDashboard();
+
+    },
+    callLane(lane) {
+      let hour = this.laneTimesEdit[lane].hour;
+      let minute = this.laneTimesEdit[lane].minute;
+      this.ticketStartHour = hour;
+      this.ticketStartMinute = minute;
+      this.ticketStart = hour + ":" + minute;
+      this.laneTimesEdit[lane].hour = "";
+      this.laneTimesEdit[lane].minute = "";
+      this.laneTimes[lane] = '';
+      this.updateDashboard(null);
     },
     getTimes() {
       return {
@@ -342,7 +432,13 @@ export default {
         this.setStartHourAndMinuteFields(dashboard.ticketStart);
         this.setEndHourAndMinuteFields(dashboard.ticketEnd);
         this.numberOfLanes = dashboard.numberOfLanes;
-        this.laneInterval = dashboard.laneInterval;
+        this.laneTimes = dashboard.laneTimes.split(',');
+        for(let i = 0; i < this.laneTimes.length; i++) {
+          let hour = this.laneTimes[i].split(":")[0];
+          let minute = this.laneTimes[i].split(":")[1];
+          this.laneTimesEdit[i].hour = hour ? hour : '';
+          this.laneTimesEdit[i].minute = minute ? minute : '';
+        }
       } else {
         this.ticketStart = dashboard.ticketStart;
         this.ticketEnd = dashboard.ticketEnd;

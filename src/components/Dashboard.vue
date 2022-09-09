@@ -36,7 +36,7 @@
               Lane {{lane}}
             </p>
             <p class="mb-0">
-              {{getTimeIntervalByLane(lane)}}
+              {{laneTimes[lane]}}
             </p>
             <p class="m-0">
               &darr;
@@ -63,7 +63,8 @@ export default {
       sendNotifications: false,
       useLanes: false,
       numberOfLanes: 4,
-      laneInterval: 5
+      laneTimes: ["", "", "", "", "", "", "", "", "", "", ""]
+      // laneInterval: 5
     };
   },
   methods: {
@@ -79,24 +80,25 @@ export default {
         this.sendNotifications = dashboard.sendNotifications;
         this.useLanes = dashboard.useLanes;
         this.numberOfLanes = dashboard.numberOfLanes;
-        this.laneInterval = dashboard.laneInterval;
+        this.laneTimes = dashboard.laneTimes.split(',');
+        // this.laneInterval = dashboard.laneInterval;
       });
     },
-    getTimeIntervalByLane(lane) {
-      let hour = parseInt(this.ticketStart.toString().split(':')[0]);
-      let minutes = parseInt(this.ticketStart.toString().split(':')[1]);
-      console.log(minutes)
-      minutes += this.laneInterval * lane;
-      while(minutes >= 60) {
-        hour += 1;
-        minutes -= 60;
-      }
-      if(hour > 12) {
-        hour -= 12;
-      }
+    // getTimeIntervalByLane(lane) {
+    //   let hour = parseInt(this.ticketStart.toString().split(':')[0]);
+    //   let minutes = parseInt(this.ticketStart.toString().split(':')[1]);
+    //   console.log(minutes)
+    //   minutes += this.laneInterval * lane;
+    //   while(minutes >= 60) {
+    //     hour += 1;
+    //     minutes -= 60;
+    //   }
+    //   if(hour > 12) {
+    //     hour -= 12;
+    //   }
 
-      return hour + ":" + (minutes < 10 ? "0" + minutes.toString() : minutes.toString());
-    }
+    //   return hour + ":" + (minutes < 10 ? "0" + minutes.toString() : minutes.toString());
+    // }
   },
   mounted() {
     document.querySelector("nav").hidden = true;
