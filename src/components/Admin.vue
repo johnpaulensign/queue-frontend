@@ -20,23 +20,11 @@
       <form @submit.prevent="login">
         <div class="row">
           <label for="username" class="col">Username</label>
-          <input
-            type="text"
-            class="col"
-            name="username"
-            id="username"
-            v-model="username"
-          />
+          <input type="text" class="col" name="username" id="username" v-model="username" />
         </div>
         <div class="row">
           <label class="col" for="password">Password</label>
-          <input
-            class="col"
-            type="password"
-            name="password"
-            id="password"
-            v-model="password"
-          />
+          <input class="col" type="password" name="password" id="password" v-model="password" />
         </div>
         <div class="row">
           <input class="col" type="submit" value="Login" />
@@ -69,7 +57,7 @@ export default {
       LoginDataService.login(window.location.host, this.username, this.password)
         .then((response) => {
           console.log("Success:", response);
-          this.authenticated = true;
+          window.location.replace("/admin");
         })
         .catch((response) => {
           console.log("Error:", response);
@@ -95,16 +83,20 @@ export default {
 h1 {
   text-align: center;
 }
+
 #loginForm.container {
   width: 30%;
 }
+
 #loginForm.row {
   text-align: center;
   align-items: center;
 }
+
 #loginForm label {
   font-size: 28px;
 }
+
 #loginForm input {
   margin-bottom: 15px;
   height: 50px;
