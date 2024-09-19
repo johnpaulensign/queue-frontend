@@ -22,6 +22,18 @@ const routes = [
     name: "signup",
     component: () => import("./components/SignupCustomer"),
   },
+  {
+    path: "/apm/dashboard",
+    name: "apm-dashboard",
+    component: () => import("./components/ApmDashboard"),
+  },
+  {
+    path: "/apm/dashboard/:queue",
+    name: "apm-details",
+    component: () => import("./components/ApmDashboard"),
+    // add props: true to pass queue as a prop
+    props: true,
+  },
 ];
 
 const router = createRouter({

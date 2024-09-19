@@ -14,18 +14,37 @@
         <li class="nav-item">
           <router-link to="/signup" class="nav-link">Sign Up</router-link>
         </li>
+        <li class="nav-item" v-if="this.authenticated">
+          <router-link to="/apm/dashboard" class="nav-link">APM</router-link>
+        </li>
       </ul>
     </nav>
 
-    <div class="ml-3 mt-3">
+    <div class="mx-3 mt-3">
       <router-view />
     </div>
   </div>
 </template>
 
 <script>
+import LoginDataService from "./services/LoginDataService";
+
 export default {
   name: "app",
+  data() {
+    return {
+      authenticated: false,
+    };
+  },
+  mounted() {
+    LoginDataService.get().then((response) => {
+      if (response.status == 401) {
+        this.authenticated = false;
+      } else {
+        this.authenticated = true;
+      }
+    });
+  },
 };
 </script>
 
