@@ -31,7 +31,7 @@
                                 <textarea class="form-control" :id="'props' + actor.id" rows="2"
                                     v-model="selectedProps" />
                             </div>
-                            <div class="form-group" v-if="nextStepName == 'Room'">
+                            <!-- <div class="form-group" v-if="nextStepName == 'Room'">
                                 <div class="form-group">
                                     <label for="room">Room</label>
                                     <select class="form-control" :id="'room' + actor.id" v-model="selectedRoom">
@@ -40,7 +40,7 @@
                                         </option>
                                     </select>
                                 </div>
-                            </div>
+                            </div> -->
                             <div class="form-group" v-if="nextStepName == 'Makeup' || nextStepName == 'Room'">
                                 <label :for="'notes' + actor.id">Notes</label>
                                 <textarea class="form-control" :id="'notes' + actor.id" rows="3" v-model="notes" />

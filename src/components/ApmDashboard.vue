@@ -23,11 +23,20 @@
                         </button>
                     </div>
                     <div class="modal-body">
+                        <label for="actor">Actor</label>
                         <select class="form-control" v-model="actorName">
                             <option v-for="actor in actorNameList" :key="actor" :value="actor">
                                 {{ actor }}
                             </option>
                         </select>
+                        <div class="form-group">
+                            <label for="room">Room</label>
+                            <select class="form-control" :id="'roomNameList'" v-model="selectedRoom">
+                                <option v-for="room in roomNameList" :key="room" :value="room">
+                                    {{ room }}
+                                </option>
+                            </select>
+                        </div>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
@@ -203,6 +212,7 @@ export default {
             makeupActors: [],
             roomActors: [],
             checkedoutActors: [],
+            selectedRoom: "",
         };
     },
     methods: {
@@ -227,7 +237,7 @@ export default {
         // call the API to add a new actor with the name in the actorName field
         initialCheckin() {
             // console.log(this.actorName);
-            ApmDataService.checkin(this.actorName)
+            ApmDataService.checkin(this.actorName, this.selectedRoom)
                 .then(() => {
                     // console.log(response.data);
                     this.retrieveActors();

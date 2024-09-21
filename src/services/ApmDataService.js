@@ -33,8 +33,8 @@ class ApmDataService {
         return rooms.values.map(v => v[0]);
     }
 
-    checkin(actor) {
-        return http.post(`/apm/checkin`, { actor });
+    checkin(actor, room) {
+        return http.post(`/apm/checkin`, { actor, room });
     }
 
     costumeCheckin(actor) {

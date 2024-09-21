@@ -23,7 +23,7 @@
                             <!-- Display the initial checkin time formatted as HH:MM:SS -->
                             <div class="col-6 d-flex justify-content-center align-items-center">
 
-                                <span v-if="actor.initialCheckin != null && nextStepName == 'Costume'"
+                                <!-- <span v-if="actor.initialCheckin != null && nextStepName == 'Costume'"
                                     class="card-text">
                                     Checked In At: {{ formatTime(actor.initialCheckin) }}
                                 </span>
@@ -35,6 +35,9 @@
                                 </span>
                                 <span v-if="actor.roomCheckin != null" class="card-text">
                                     Moved to room at: {{ formatTime(actor.roomCheckin) }}
+                                </span> -->
+                                <span v-if="actor.room" class="card-text">
+                                    Room: {{ actor.room }}
                                 </span>
                             </div>
 
