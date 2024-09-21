@@ -23,7 +23,11 @@
                         </button>
                     </div>
                     <div class="modal-body">
-                        <input type="text" v-model="actorName" ref="actorNameInput" placeholder="Actor Name">
+                        <select class="form-control" v-model="actorName">
+                            <option v-for="actor in actorNameList" :key="actor" :value="actor">
+                                {{ actor }}
+                            </option>
+                        </select>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
@@ -42,7 +46,8 @@
 
             <!-- Costume -->
             <Queue :class="this.queue != null ? queue : ''" queueName="Costume" queueId="costume"
-                :actors="costumeActors" nextStepName="Makeup" :nextStep="makeupCheckin" :queueRoute="this.queue" />
+                :actors="costumeActors" nextStepName="Makeup" :nextStep="makeupCheckin" :queueRoute="this.queue"
+                :artistNameList="artistNameList" />
             <!-- :queueRoute="this.queue" /> -->
             <!-- <div class="col-md-6" :hidden="this.queue != undefined && this.queue != 'costume'">
                 <h2 class="mt-5">Costume</h2>
@@ -51,14 +56,15 @@
                         <h5 class="card-title"> actor.actor </h5>
                         <p class="card-text">{{ actor.costumeCheckin }}</p> -->
             <!-- Button that calls makeupCheckin with the actor's id -->
-            <!-- <button @click="makeupCheckin(actor.id)">Send to Makeup</button>
+            <!-- <button @click="makeupCheckin(actor)">Send to Makeup</button>
                     </div>
                 </div>
             </div> -->
 
             <!-- Makeup -->
             <Queue :class="this.queue != null ? queue : ''" queueName="Makeup" queueId="makeup" :actors="makeupActors"
-                nextStepName="Room" :nextStep="roomCheckin" :queueRoute="this.queue" />
+                nextStepName="Room" :nextStep="roomCheckin" :queueRoute="this.queue" :roomNameList="roomNameList"
+                :artistNameList="artistNameList" />
 
             <!-- <div class="col-md-6" :hidden="this.queue != undefined && this.queue != 'makeup'">
                 <h2 class="mt-5">Makeup</h2>
@@ -67,7 +73,7 @@
                         <h5 class="card-title"> actor.actor </h5>
                         <p class="card-text">{{ actor.makeupCheckin }}</p> -->
             <!-- Button that calls roomCheckin with the actor's id -->
-            <!-- <button @click="roomCheckin(actor.id)">Send to Room</button>
+            <!-- <button @click="roomCheckin(actor)">Send to Room</button>
                     </div>
                 </div>
             </div> -->
@@ -83,7 +89,7 @@
                         <h5 class="card-title"> actor.actor </h5>
                         <p class="card-text">{{ actor.roomCheckin }}</p> -->
             <!-- Button that will call finalCheckout with the actors id as a parameter -->
-            <!-- <button @click="finalCheckout(actor.id)">Final Checkout</button>
+            <!-- <button @click="finalCheckout(actor)">Final Checkout</button>
                     </div>
                 </div>
             </div> -->
@@ -188,6 +194,9 @@ export default {
     data() {
         return {
             actorName: "",
+            actorNameList: [],
+            roomNameList: [],
+            artistNameList: [],
             actors: [],
             checkedinActors: [],
             costumeActors: [],
@@ -209,7 +218,7 @@ export default {
                     this.makeupActors = this.actors.filter(actor => actor.initialCheckin != null && actor.costumeCheckin != null && actor.makeupCheckin != null && actor.roomCheckin == null && actor.finalCheckout == null);
                     this.roomActors = this.actors.filter(actor => actor.initialCheckin != null && actor.costumeCheckin != null && actor.makeupCheckin != null && actor.roomCheckin != null && actor.finalCheckout == null);
                     this.checkedoutActors = this.actors.filter(actor => actor.finalCheckout != null);
-                    console.log(response.data);
+                    // console.log(response.data);
                 })
                 .catch(e => {
                     console.log(e);
@@ -217,10 +226,10 @@ export default {
         },
         // call the API to add a new actor with the name in the actorName field
         initialCheckin() {
-            console.log(this.actorName);
+            // console.log(this.actorName);
             ApmDataService.checkin(this.actorName)
-                .then(response => {
-                    console.log(response.data);
+                .then(() => {
+                    // console.log(response.data);
                     this.retrieveActors();
                     this.actorName = "";
                 })
@@ -229,11 +238,11 @@ export default {
                 });
         },
         // call the API to update the actor's costumeCheckin field to the current date
-        costumeCheckin(id) {
-            console.log(id);
-            ApmDataService.costumeCheckin(id)
-                .then(response => {
-                    console.log(response.data);
+        costumeCheckin(actor) {
+            // console.log(actor);
+            ApmDataService.costumeCheckin(actor)
+                .then(() => {
+                    // console.log(response.data);
                     this.retrieveActors();
                 })
                 .catch(e => {
@@ -241,11 +250,11 @@ export default {
                 });
         },
         // call the API to update the actor's makeupCheckin field to the current date
-        makeupCheckin(id) {
-            console.log(id);
-            ApmDataService.makeupCheckin(id)
-                .then(response => {
-                    console.log(response.data);
+        makeupCheckin(actor) {
+            // console.log(actor);
+            ApmDataService.makeupCheckin(actor)
+                .then(() => {
+                    // console.log(response.data);
                     this.retrieveActors();
                 })
                 .catch(e => {
@@ -253,11 +262,11 @@ export default {
                 });
         },
         // call the API to update the actor's roomCheckin field to the current date
-        roomCheckin(id) {
-            console.log(id);
-            ApmDataService.roomCheckin(id)
-                .then(response => {
-                    console.log(response.data);
+        roomCheckin(actor) {
+            // console.log(actor);
+            ApmDataService.roomCheckin(actor)
+                .then(() => {
+                    // console.log(response.data);
                     this.retrieveActors();
                 })
                 .catch(e => {
@@ -265,11 +274,11 @@ export default {
                 });
         },
         // call the API to update the actor's checkedOut field to the current date
-        finalCheckout(id) {
-            console.log(id);
-            ApmDataService.finalCheckout(id)
-                .then(response => {
-                    console.log(response.data);
+        finalCheckout(actor) {
+            // console.log(actor);
+            ApmDataService.finalCheckout(actor)
+                .then(() => {
+                    // console.log(response.data);
                     this.retrieveActors();
                 })
                 .catch(e => {
@@ -283,7 +292,11 @@ export default {
     // call retrieveActors() when the component is created
     created() {
         this.retrieveActors();
-        console.log(this.queue);
+
+        ApmDataService.getActors().then(response => this.actorNameList = response);
+        ApmDataService.getArtists().then(response => this.artistNameList = response);
+        ApmDataService.getRooms().then(response => { this.roomNameList = response; console.log(response); });
+        // console.log(this.queue);
     },
     mounted() {
         // document.querySelector('#checkinModal').on('shown.bs.modal', this.focusActorNameInput);

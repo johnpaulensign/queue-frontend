@@ -11,40 +11,51 @@
 
             <div :class="'row m-0 vh-33 ' + (this.queueRoute != null ? 'tall' : '')">
                 <div v-if="actors.length > 0">
-                    <div class="col-xl-6 col-lg-6 col-sm-12 card " v-for="actor in actors" :key="actor.id">
-                        <div class="card-body">
-                            <h5 class="card-title">{{ actor.actor }}</h5>
+                    <div class="col-12 card " v-for="actor in actors" :key="actor.id">
+                        <div class="card-body row">
+
+                            <div class="d-flex justify-content-center align-items-center col-3">
+                                <h5 class="card-title m-0">
+                                    {{ actor.actor }}
+                                </h5>
+                            </div>
 
                             <!-- Display the initial checkin time formatted as HH:MM:SS -->
-                            <p v-if="actor.initialCheckin != null" class="card-text">
-                                Initial Checkin: {{ formatTime(actor.initialCheckin) }}
-                            </p>
-                            <p v-if="actor.costumeCheckin != null" class="card-text">
-                                Costume Checkin: {{ formatTime(actor.costumeCheckin) }}
-                            </p>
-                            <p v-if="actor.makeupCheckin != null" class="card-text">
-                                Makeup Checkin: {{ formatTime(actor.makeupCheckin) }}
-                            </p>
-                            <p v-if="actor.roomCheckin != null" class="card-text">
-                                Room Checkin: {{ formatTime(actor.roomCheckin) }}
-                            </p>
+                            <div class="col-6 d-flex justify-content-center align-items-center">
+
+                                <span v-if="actor.initialCheckin != null && nextStepName == 'Costume'"
+                                    class="card-text">
+                                    Checked In At: {{ formatTime(actor.initialCheckin) }}
+                                </span>
+                                <span v-if="actor.costumeCheckin != null && nextStepName == 'Makeup'" class="card-text">
+                                    Moved to costume at: {{ formatTime(actor.costumeCheckin) }}
+                                </span>
+                                <span v-if="actor.makeupCheckin != null && nextStepName == 'Room'" class="card-text">
+                                    Moved to makeup at: {{ formatTime(actor.makeupCheckin) }}
+                                </span>
+                                <span v-if="actor.roomCheckin != null" class="card-text">
+                                    Moved to room at: {{ formatTime(actor.roomCheckin) }}
+                                </span>
+                            </div>
 
 
                             <!-- <p class="card-text">{{ actor.initialCheckin }}</p> -->
                             <!-- Button that calls nextStep with the actor's id -->
-                            <div class="p-0">
-                                <div class="d-flex justify-content-end">
-                                    <!-- <button class="btn btn-danger" @click="nextStep(actor.id)">
+                            <div class="p-0 col-3 d-flex justify-content-end">
+                                <!-- <button class="btn btn-danger" @click="nextStep(actor.id)">
                                         Remove
                                     </button> -->
-                                    <button class="btn btn-success" @click="nextStep(actor.id)">
+                                <MoveActorDialog :actor="actor" :nextStep="nextStep" :nextStepName="nextStepName"
+                                    :roomNameList="this.roomNameList" :artistNameList="artistNameList"
+                                    v-if="actor.costumeCheckin != null && actor.roomCheckin == null" />
+                                <!-- <button class="btn btn-success" @click="nextStep(actor.id)">
                                         Move to {{ this.nextStepName }}
-                                    </button>
-                                </div>
+                                    </button> -->
+                                <button v-if="actor.costumeCheckin == null || actor.roomCheckin != null"
+                                    class="btn btn-success" @click="nextStep(actor)">
+                                    Move to {{ this.nextStepName }}
+                                </button>
                             </div>
-                            <!-- <button class="btn btn-success" @click="nextStep(actor.id)">
-                                Move to {{ this.nextStepName }}
-                            </button> -->
                         </div>
                     </div>
                 </div>
@@ -61,6 +72,8 @@
 </template>
 
 <script>
+import MoveActorDialog from "./MoveActorDialog";
+
 export default {
     name: "Queue",
     props: {
@@ -69,7 +82,21 @@ export default {
         queueId: String,
         actors: Array,
         nextStepName: String,
-        nextStep: Function
+        nextStep: Function,
+        roomNameList: Array,
+        artistNameList: Array
+    },
+    data() {
+        return {
+        };
+    },
+    components: {
+        MoveActorDialog
+    },
+    watch: {
+        roomNameList() {
+            console.log("Room Name List queue:", this.roomNameList);
+        }
     },
     methods: {
         formatTime(time) {
@@ -79,10 +106,11 @@ export default {
             // Get the hours, minutes, and seconds
             const hours = date.getHours();
             const minutes = date.getMinutes();
-            const seconds = date.getSeconds();
+            // const seconds = date.getSeconds();
 
             // Return the formatted time
-            return `${hours < 10 ? '0' + hours : hours}:${minutes < 10 ? '0' + minutes : minutes}:${seconds < 10 ? '0' + seconds : seconds}`;
+            // return `${hours < 10 ? '0' + hours : hours}:${minutes < 10 ? '0' + minutes : minutes}:${seconds < 10 ? '0' + seconds : seconds}`;
+            return `${hours < 10 ? '0' + hours : hours}:${minutes < 10 ? '0' + minutes : minutes}`;
         }
     }
 };
@@ -113,6 +141,14 @@ export default {
     background-color: #ccc;
 }
 
+.display-inline {
+    display: inline-block !important;
+}
+
+/* 
+.card-title {
+    display: inline-block;
+} */
 
 /* .card {
     border: 1px solid #ccc;

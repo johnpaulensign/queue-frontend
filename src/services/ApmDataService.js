@@ -5,24 +5,52 @@ class ApmDataService {
         return http.get(`/apm/`);
     }
 
+    async getActors() {
+        var actors = [];
+        await fetch('https://sheets.googleapis.com/v4/spreadsheets/1S_Bhj7n0ZQLfvw2ig_OaWEI3AtsHDuSI-aZiOyusW_0/values/Names!A:A?key=AIzaSyBByJbHHpL8XVCmEi8AN-WOaKmqSm6-f6U')
+            .then(response => response.json())
+            .then(data => actors = data)
+            .catch(error => console.error('Error:', error));
+
+        return actors.values.map(v => v[0]);
+    }
+    async getArtists() {
+        var artists = [];
+        await fetch('https://sheets.googleapis.com/v4/spreadsheets/1S_Bhj7n0ZQLfvw2ig_OaWEI3AtsHDuSI-aZiOyusW_0/values/Artists!A:A?key=AIzaSyBByJbHHpL8XVCmEi8AN-WOaKmqSm6-f6U')
+            .then(response => response.json())
+            .then(data => artists = data)
+            .catch(error => console.error('Error:', error));
+
+        return artists.values.map(v => v[0]);
+    }
+    async getRooms() {
+        var rooms = [];
+        await fetch('https://sheets.googleapis.com/v4/spreadsheets/1S_Bhj7n0ZQLfvw2ig_OaWEI3AtsHDuSI-aZiOyusW_0/values/Rooms!A:A?key=AIzaSyBByJbHHpL8XVCmEi8AN-WOaKmqSm6-f6U')
+            .then(response => response.json())
+            .then(data => rooms = data)
+            .catch(error => console.error('Error:', error));
+
+        return rooms.values.map(v => v[0]);
+    }
+
     checkin(actor) {
         return http.post(`/apm/checkin`, { actor });
     }
 
-    costumeCheckin(data) {
-        return http.put(`/apm/checkin/costume`, { id: data });
+    costumeCheckin(actor) {
+        return http.put(`/apm/checkin/costume`, { id: actor.id });
     }
 
-    makeupCheckin(data) {
-        return http.put(`/apm/checkin/costume/makeup`, { id: data });
+    makeupCheckin(actor) {
+        return http.put(`/apm/checkin/costume/makeup`, { id: actor.id, costumeArtist: actor.selectedArtist, costumeProps: actor.selectedProps, costumeNotes: actor.notes });
     }
 
-    roomCheckin(data) {
-        return http.put(`/apm/checkin/makeup/room`, { id: data });
+    roomCheckin(actor) {
+        return http.put(`/apm/checkin/makeup/room`, { id: actor.id, makeupArtist: actor.selectedArtist, makeupNotes: actor.notes, room: actor.selectedRoom });
     }
 
-    finalCheckout(id) {
-        return http.put(`/apm/checkout`, { id });
+    finalCheckout(actor) {
+        return http.put(`/apm/checkout`, { id: actor.id });
     }
 
 }
