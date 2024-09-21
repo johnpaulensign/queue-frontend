@@ -258,11 +258,12 @@ export default {
         // call the API to add a new actor with the name in the actorName field
         initialCheckin() {
             // console.log(this.actorName);
-            ApmDataService.checkin(this.actorName, this.selectedRoom.name)
+            ApmDataService.checkin(this.actorName, this.selectedRoom)
                 .then(() => {
                     // console.log(response.data);
                     this.retrieveActors();
                     this.actorName = "";
+                    this.selectedRoom = null;
                 })
                 .catch(e => {
                     console.log(e);

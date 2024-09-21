@@ -34,7 +34,7 @@ class ApmDataService {
     }
 
     checkin(actor, room) {
-        return http.post(`/apm/checkin`, { actor, room });
+        return http.post(`/apm/checkin`, { actor, room: room.name, roomDescription: room.description });
     }
 
     costumeCheckin(actor) {

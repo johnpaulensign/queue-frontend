@@ -36,9 +36,14 @@
                                 <span v-if="actor.roomCheckin != null" class="card-text">
                                     Moved to room at: {{ formatTime(actor.roomCheckin) }}
                                 </span> -->
-                                <span v-if="actor?.room" class="card-text">
-                                    Room: {{ actor.room }}
-                                </span>
+                                <div v-if="actor?.room" class="card-text">
+                                    <p>
+                                        Room: {{ actor.room }}
+                                    </p>
+                                    <p>
+                                        Description: {{ actor.roomDescription }}
+                                    </p>
+                                </div>
                             </div>
 
 
