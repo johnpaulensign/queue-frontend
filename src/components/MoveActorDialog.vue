@@ -49,7 +49,8 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                        <button type="button" class="btn btn-primary" data-dismiss="modal" @click="save">
+                        <button type="button" class="btn btn-primary" data-dismiss="modal" @click="save"
+                            :disabled="!selectedArtist && nextStepName == 'Room' || !selectedArtist && nextStepName == 'Makeup'">
                             Move to {{ nextStepName }}
                         </button>
                     </div>

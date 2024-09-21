@@ -11,6 +11,9 @@
             </button>
         </div>
 
+        <!-- actor modal -->
+        <ActorDialog :actor="selectedActor" />
+
         <!-- Modal -->
         <div class="modal fade" id="checkinModal" ref="checkinModal" tabindex="-1" role="dialog"
             aria-labelledby="checkinModalLabel" aria-hidden="true">
@@ -29,19 +32,21 @@
                                 {{ actor }}
                             </option>
                         </select>
-                        <div class="form-group">
+                        <div class="form-group mt-3">
                             <label for="room">Room</label>
                             <select class="form-control" :id="'roomNameList'" v-model="selectedRoom">
                                 <option v-for="room in roomNameList" :key="room" :value="room">
-                                    {{ room }}
+                                    {{ room.name }}
                                 </option>
                             </select>
+
+                            <p class="mt-3">{{ selectedRoom?.description }}</p>
                         </div>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
                         <button type="button" class="btn btn-primary" data-dismiss="modal"
-                            @click="initialCheckin">Check-in</button>
+                            :disabled="!selectedRoom?.name || !actorName" @click="initialCheckin">Check-in</button>
                     </div>
                 </div>
             </div>
@@ -51,12 +56,13 @@
 
             <!-- Checked In -->
             <Queue :class="this.queue != null ? queue : ''" queueName="Checked In" queueId="checkedin"
-                :actors="checkedinActors" nextStepName="Costume" :nextStep="costumeCheckin" :queueRoute="this.queue" />
+                :actors="checkedinActors" nextStepName="Costume" :nextStep="costumeCheckin" :queueRoute="this.queue"
+                @selectActor="selectActor" />
 
             <!-- Costume -->
             <Queue :class="this.queue != null ? queue : ''" queueName="Costume" queueId="costume"
                 :actors="costumeActors" nextStepName="Makeup" :nextStep="makeupCheckin" :queueRoute="this.queue"
-                :artistNameList="artistNameList" />
+                :artistNameList="artistNameList" @selectActor="selectActor" />
             <!-- :queueRoute="this.queue" /> -->
             <!-- <div class="col-md-6" :hidden="this.queue != undefined && this.queue != 'costume'">
                 <h2 class="mt-5">Costume</h2>
@@ -73,7 +79,7 @@
             <!-- Makeup -->
             <Queue :class="this.queue != null ? queue : ''" queueName="Makeup" queueId="makeup" :actors="makeupActors"
                 nextStepName="Room" :nextStep="roomCheckin" :queueRoute="this.queue" :roomNameList="roomNameList"
-                :artistNameList="artistNameList" />
+                :artistNameList="artistNameList" @selectActor="selectActor" />
 
             <!-- <div class="col-md-6" :hidden="this.queue != undefined && this.queue != 'makeup'">
                 <h2 class="mt-5">Makeup</h2>
@@ -89,7 +95,7 @@
 
             <!-- Room -->
             <Queue :class="this.queue != null ? queue : ''" queueName="Room" queueId="room" :actors="roomActors"
-                nextStepName="Complete" :nextStep="finalCheckout" :queueRoute="this.queue" />
+                nextStepName="Complete" :nextStep="finalCheckout" :queueRoute="this.queue" @selectActor="selectActor" />
 
             <!-- <div class="col-md-6" :hidden="this.queue != undefined && this.queue != 'room'">
                 <h2 class="mt-5">Rooms</h2>
@@ -193,6 +199,8 @@
 // import the ApmDataService module
 import ApmDataService from "@/services/ApmDataService";
 import Queue from './Queue.vue'
+import ActorDialog from "./ActorDialog";
+
 
 // props that stores a list of actors from /api/apm
 export default {
@@ -206,16 +214,24 @@ export default {
             actorNameList: [],
             roomNameList: [],
             artistNameList: [],
+            actorNameListAll: [],
             actors: [],
+            activeActors: [],
             checkedinActors: [],
             costumeActors: [],
             makeupActors: [],
             roomActors: [],
             checkedoutActors: [],
-            selectedRoom: "",
+            selectedRoom: {},
+            actorTimer: null,
+            selectedActor: null
         };
     },
     methods: {
+        // select actor
+        selectActor(actor) {
+            this.selectedActor = actor;
+        },
         // get list of actors from /api/apm
         retrieveActors() {
             // call the API
@@ -227,8 +243,13 @@ export default {
                     this.costumeActors = this.actors.filter(actor => actor.initialCheckin != null && actor.costumeCheckin != null && actor.makeupCheckin == null && actor.roomCheckin == null && actor.finalCheckout == null);
                     this.makeupActors = this.actors.filter(actor => actor.initialCheckin != null && actor.costumeCheckin != null && actor.makeupCheckin != null && actor.roomCheckin == null && actor.finalCheckout == null);
                     this.roomActors = this.actors.filter(actor => actor.initialCheckin != null && actor.costumeCheckin != null && actor.makeupCheckin != null && actor.roomCheckin != null && actor.finalCheckout == null);
+                    this.activeActors = this.actors.filter(actor => actor.initialCheckin != null && actor.finalCheckout == null);
                     this.checkedoutActors = this.actors.filter(actor => actor.finalCheckout != null);
                     // console.log(response.data);
+
+                    // filter actorsNameList to not include activeActors
+                    this.actorNameList = this.actorNameListAll.filter(actorName => !this.activeActors.some(actor => actor.actor === actorName));
+
                 })
                 .catch(e => {
                     console.log(e);
@@ -237,7 +258,7 @@ export default {
         // call the API to add a new actor with the name in the actorName field
         initialCheckin() {
             // console.log(this.actorName);
-            ApmDataService.checkin(this.actorName, this.selectedRoom)
+            ApmDataService.checkin(this.actorName, this.selectedRoom.name)
                 .then(() => {
                     // console.log(response.data);
                     this.retrieveActors();
@@ -300,18 +321,26 @@ export default {
         }
     },
     // call retrieveActors() when the component is created
-    created() {
-        this.retrieveActors();
+    async created() {
+        await ApmDataService.getActors().then(response => this.actorNameListAll = response);
+        await ApmDataService.getArtists().then(response => this.artistNameList = response);
+        await ApmDataService.getRooms().then(response => { this.roomNameList = response; console.log(response); });
 
-        ApmDataService.getActors().then(response => this.actorNameList = response);
-        ApmDataService.getArtists().then(response => this.artistNameList = response);
-        ApmDataService.getRooms().then(response => { this.roomNameList = response; console.log(response); });
+        this.retrieveActors();
         // console.log(this.queue);
     },
     mounted() {
         // document.querySelector('#checkinModal').on('shown.bs.modal', this.focusActorNameInput);
+        // call retrieveActors() every 5 seconds
+        this.actorTimer = setInterval(() => {
+            this.retrieveActors();
+        }, 5000);
     },
-    components: { Queue }
+    // clear the interval when the component is destroyed
+    beforeUnmount() {
+        clearInterval(this.actorTimer);
+    },
+    components: { Queue, ActorDialog }
 };
 </script>
 

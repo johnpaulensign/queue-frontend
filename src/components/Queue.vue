@@ -8,16 +8,16 @@
                     <h2 class="mb-0">{{ queueName }}</h2>
                 </a>
             </div>
-
             <div :class="'row m-0 vh-33 ' + (this.queueRoute != null ? 'tall' : '')">
                 <div v-if="actors.length > 0">
                     <div class="col-12 card " v-for="actor in actors" :key="actor.id">
                         <div class="card-body row">
 
-                            <div class="d-flex justify-content-center align-items-center col-3">
-                                <h5 class="card-title m-0">
+                            <div class="d-flex  align-items-stretch col-3 p-0">
+                                <button type="button" class="card-title flex-fill m-0 btn btn-primary"
+                                    data-toggle="modal" :data-target="'#actorDialog'" @click="selectActor(actor)">
                                     {{ actor.actor }}
-                                </h5>
+                                </button>
                             </div>
 
                             <!-- Display the initial checkin time formatted as HH:MM:SS -->
@@ -36,7 +36,7 @@
                                 <span v-if="actor.roomCheckin != null" class="card-text">
                                     Moved to room at: {{ formatTime(actor.roomCheckin) }}
                                 </span> -->
-                                <span v-if="actor.room" class="card-text">
+                                <span v-if="actor?.room" class="card-text">
                                     Room: {{ actor.room }}
                                 </span>
                             </div>
@@ -91,10 +91,12 @@ export default {
     },
     data() {
         return {
+            selectedActor: null
         };
     },
+    emits: ["selectActor"],
     components: {
-        MoveActorDialog
+        MoveActorDialog,
     },
     watch: {
         roomNameList() {
@@ -102,6 +104,10 @@ export default {
         }
     },
     methods: {
+        selectActor(actor) {
+            console.log("Selected Actor:", actor);
+            this.$emit("selectActor", actor);
+        },
         formatTime(time) {
             // Create a new date object with the time
             const date = new Date(time);

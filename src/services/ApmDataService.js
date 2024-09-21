@@ -25,12 +25,12 @@ class ApmDataService {
     }
     async getRooms() {
         var rooms = [];
-        await fetch('https://sheets.googleapis.com/v4/spreadsheets/1S_Bhj7n0ZQLfvw2ig_OaWEI3AtsHDuSI-aZiOyusW_0/values/Rooms!A:A?key=AIzaSyBByJbHHpL8XVCmEi8AN-WOaKmqSm6-f6U')
+        await fetch('https://sheets.googleapis.com/v4/spreadsheets/1S_Bhj7n0ZQLfvw2ig_OaWEI3AtsHDuSI-aZiOyusW_0/values/Rooms!A:B?key=AIzaSyBByJbHHpL8XVCmEi8AN-WOaKmqSm6-f6U')
             .then(response => response.json())
             .then(data => rooms = data)
             .catch(error => console.error('Error:', error));
 
-        return rooms.values.map(v => v[0]);
+        return rooms.values.map(v => { return { name: v[0], description: v[1] } });
     }
 
     checkin(actor, room) {
@@ -46,7 +46,7 @@ class ApmDataService {
     }
 
     roomCheckin(actor) {
-        return http.put(`/apm/checkin/makeup/room`, { id: actor.id, makeupArtist: actor.selectedArtist, makeupNotes: actor.notes, room: actor.selectedRoom });
+        return http.put(`/apm/checkin/makeup/room`, { id: actor.id, makeupArtist: actor.selectedArtist, makeupNotes: actor.notes });
     }
 
     finalCheckout(actor) {
