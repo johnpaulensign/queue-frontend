@@ -40,8 +40,15 @@
                                     <p>
                                         Room: {{ actor.room }}
                                     </p>
-                                    <p>
-                                        Description: {{ actor.roomDescription }}
+                                    <p v-if="actor.costumeCheckin == null">
+                                        Room Description: {{ actor.roomDescription }}
+                                    </p>
+                                    <p v-if="actor.costumeCheckin != null && actor.makeupCheckin == null">
+                                        Costume Description: {{ actor.costumeDescription }}
+                                    </p>
+                                    <p
+                                        v-if="actor.costumeCheckin != null && actor.makeupCheckin != null && actor.roomCheckin == null">
+                                        Makeup Description: {{ actor.makeupDescription }}
                                     </p>
                                 </div>
                             </div>

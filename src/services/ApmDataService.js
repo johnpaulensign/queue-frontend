@@ -25,16 +25,16 @@ class ApmDataService {
     }
     async getRooms() {
         var rooms = [];
-        await fetch('https://sheets.googleapis.com/v4/spreadsheets/1S_Bhj7n0ZQLfvw2ig_OaWEI3AtsHDuSI-aZiOyusW_0/values/Rooms!A:B?key=AIzaSyBByJbHHpL8XVCmEi8AN-WOaKmqSm6-f6U')
+        await fetch('https://sheets.googleapis.com/v4/spreadsheets/1S_Bhj7n0ZQLfvw2ig_OaWEI3AtsHDuSI-aZiOyusW_0/values/Rooms!A:D?key=AIzaSyBByJbHHpL8XVCmEi8AN-WOaKmqSm6-f6U')
             .then(response => response.json())
             .then(data => rooms = data)
             .catch(error => console.error('Error:', error));
 
-        return rooms.values.map(v => { return { name: v[0], description: v[1] } });
+        return rooms.values.map(v => { return { name: v[0], description: v[1], costumeDescription: v[2], makeupDescription: v[3] } });
     }
 
     checkin(actor, room) {
-        return http.post(`/apm/checkin`, { actor, room: room.name, roomDescription: room.description });
+        return http.post(`/apm/checkin`, { actor, room: room.name, roomDescription: room.description, costumeDescription: room.costumeDescription, makeupDescription: room.makeupDescription });
     }
 
     costumeCheckin(actor) {

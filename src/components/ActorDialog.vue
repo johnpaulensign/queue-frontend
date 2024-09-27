@@ -2,7 +2,7 @@
     <!-- Display a bootstrap modal the actor's name, check in times, props, notes -->
     <div class="modal fade" id="actorDialog" tabindex="-1" role="dialog" aria-labelledby="actorDialogLabel"
         aria-hidden="true">
-        <div class="modal-dialog" role="document">
+        <div class="modal-dialog modal-lg" role="document">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="actorDialogLabel">{{ actor?.actor }}</h5>
@@ -17,6 +17,8 @@
                     <div class="col-8">{{ actor?.initialCheckin }}</div>
                     <div class="col-4 d-flex justify-content-end">Costume Checkin</div>
                     <div class="col-8">{{ actor?.costumeCheckin }}</div>
+                    <div class="col-4 d-flex justify-content-end">Costume Description</div>
+                    <div class="col-8">{{ actor?.costumeDescription }}</div>
                     <div class="col-4 d-flex justify-content-end">Costume Artist</div>
                     <div class="col-8">{{ actor?.costumeArtist }}</div>
                     <div class="col-4 d-flex justify-content-end">Costume Props</div>
@@ -25,6 +27,8 @@
                     <div class="col-8">{{ actor?.costumeNotes }}</div>
                     <div class="col-4 d-flex justify-content-end">Makeup Checkin</div>
                     <div class="col-8">{{ actor?.makeupCheckin }}</div>
+                    <div class="col-4 d-flex justify-content-end">Makeup Description</div>
+                    <div class="col-8">{{ actor?.makeupDescription }}</div>
                     <div class="col-4 d-flex justify-content-end">Makeup Artist</div>
                     <div class="col-8">{{ actor?.makeupArtist }}</div>
                     <div class="col-4 d-flex justify-content-end">Makeup Notes</div>
