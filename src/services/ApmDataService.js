@@ -29,7 +29,6 @@ class ApmDataService {
             .then(response => response.json())
             .then(data => rooms = data)
             .catch(error => console.error('Error:', error));
-
         return rooms.values.map(v => { return { name: v[0], description: v[1], costumeDescription: v[2], makeupDescription: v[3] } });
     }
 
